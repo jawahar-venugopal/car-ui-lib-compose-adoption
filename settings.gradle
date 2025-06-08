@@ -1,0 +1,4 @@
+rootProject.name = "compose-car-ui-lib-adoption"
+include ':car-ui-compose-lib', ':prototypeA'
+//, ':prototypeB'
+

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Preferences -->
+    <dimen name="car_ui_pref_padding">16dp</dimen>
+    <dimen name="car_ui_pref_min_height">48dp</dimen>
+    <dimen name="car_ui_pref_icon_size">24dp</dimen>
+    <dimen name="car_ui_pref_icon_spacing">16dp</dimen>
+    <dimen name="car_ui_dialog_list_item_vertical_padding">16dp</dimen>
+    <dimen name="car_ui_dialog_list_item_horizontal_padding">24dp</dimen>
+    <dimen name="car_ui_dialog_list_item_icon_margin_end">16dp</dimen>
+
+    <!-- EditText -->
+    <dimen name="car_ui_edit_text_min_height">48dp</dimen>
+    <dimen name="car_ui_edit_text_horizontal_padding">16dp</dimen>
+
+    <!-- Toolbar -->
+    <dimen name="car_ui_toolbar_height">56dp</dimen>
+    <dimen name="car_ui_toolbar_horizontal_padding">16dp</dimen>
+    <dimen name="car_ui_toolbar_vertical_padding">8dp</dimen>
+    <dimen name="car_ui_toolbar_icon_size">24dp</dimen>
+    <dimen name="car_ui_toolbar_icon_spacing">8dp</dimen>
+    <dimen name="car_ui_toolbar_title_text_size">20sp</dimen>
+    <dimen name="car_ui_toolbar_elevation">4dp</dimen>
+
+    <!-- List items -->
+    <dimen name="car_ui_list_item_horizontal_padding">16dp</dimen>
+    <dimen name="car_ui_list_item_vertical_padding">12dp</dimen>
+    <dimen name="car_ui_list_item_icon_size">24dp</dimen>
+    <dimen name="car_ui_list_item_chevron_size">24dp</dimen>
+    <dimen name="car_ui_content_list_item_icon_size">24dp</dimen>
+    <dimen name="car_ui_content_list_item_avatar_size">40dp</dimen>
+    <dimen name="car_ui_content_list_item_content_size">48dp</dimen>
+    <dimen name="car_ui_content_list_item_icon_spacing">16dp</dimen>
+    <dimen name="car_ui_content_list_item_min_height">56dp</dimen>
+    <dimen name="car_ui_content_list_item_content_corner_radius">8dp</dimen>
+
+    <!-- Divider -->
+    <dimen name="car_ui_divider_height">1dp</dimen>
+
+    <!-- Header List Item -->
+    <dimen name="car_ui_header_list_item_text_size">18sp</dimen>
+    <dimen name="car_ui_header_list_item_vertical_padding">10dp</dimen>
+
+    <!-- Shapes -->
+    <dimen name="car_ui_shape_small">4dp</dimen>
+    <dimen name="car_ui_shape_medium">8dp</dimen>
+    <dimen name="car_ui_shape_large">16dp</dimen>
+
+    <!-- General text -->
+    <dimen name="car_ui_text_size">16sp</dimen>
+    <dimen name="car_ui_secondary_text_size">14sp</dimen>
+
+    <!-- Dialog -->
+    <dimen name="car_ui_alert_dialog_min_width">320dp</dimen>
+    <dimen name="car_ui_alert_dialog_padding">24dp</dimen>
+    <dimen name="car_ui_alert_dialog_icon_size">40dp</dimen>
+    <dimen name="car_ui_alert_dialog_button_spacing">12dp</dimen>
+</resources>
