@@ -47,7 +47,7 @@ fun SearchView(
     onClear: (() -> Unit)? = null,
 ) {
     val isEditable = enabled && !restricted
-    val iconSize = dimensionResource(id = R.dimen.car_ui_toolbar_icon_size)
+    val iconSize = dimensionResource(id = R.dimen.car_ui_primary_icon_size)
     val iconSpacing = dimensionResource(id = R.dimen.car_ui_toolbar_icon_spacing)
 
     Surface(

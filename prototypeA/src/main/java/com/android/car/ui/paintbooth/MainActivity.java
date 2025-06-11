@@ -16,27 +16,15 @@
 
 package com.android.car.ui.paintbooth;
 
-import static com.android.car.ui.paintbooth.PaintBoothApplication.SHARED_PREFERENCES_FILE;
-import static com.android.car.ui.paintbooth.PaintBoothApplication.SHARED_PREFERENCES_PLUGIN_DENYLIST;
-
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.Switch;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.util.Supplier;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.car.ui.FocusArea;
@@ -52,17 +40,13 @@ import com.android.car.ui.paintbooth.toolbar.ToolbarActivity;
 import com.android.car.ui.recyclerview.CarUiRecyclerView;
 import com.android.car.ui.toolbar.ToolbarController;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * Paint booth app
  */
 public class MainActivity extends Activity implements InsetsChangedListener {
-
-    public static final String STOP_SERVICE = "com.android.car.ui.paintbooth.StopService";
 
     /**
      * List of all sample activities.
@@ -104,26 +88,6 @@ public class MainActivity extends Activity implements InsetsChangedListener {
         }
     }
 
-    private static class SwitchViewHolder extends ViewHolder {
-        private final Switch mSwitch;
-
-        SwitchViewHolder(@NonNull View itemView) {
-            super(itemView);
-            mSwitch = itemView.requireViewById(R.id.button);
-        }
-
-        @Override
-        public void bind(ListElement e) {
-            if (!(e instanceof SwitchElement)) {
-                throw new IllegalArgumentException("Expected an ActivityElement");
-            }
-            SwitchElement element = (SwitchElement) e;
-            mSwitch.setChecked(element.isChecked());
-            mSwitch.setText(element.getText());
-            mSwitch.setOnCheckedChangeListener(element.getOnCheckedChangedListener());
-        }
-    }
-
     private final RecyclerView.Adapter<ViewHolder> mAdapter =
             new RecyclerView.Adapter<ViewHolder>() {
                 @NonNull
@@ -133,9 +97,6 @@ public class MainActivity extends Activity implements InsetsChangedListener {
                     if (viewType == ListElement.TYPE_ACTIVITY) {
                         return new ActivityViewHolder(
                                 inflater.inflate(R.layout.list_item, parent, false));
-                    } else if (viewType == ListElement.TYPE_SWITCH) {
-                        return new SwitchViewHolder(
-                                inflater.inflate(R.layout.list_item_switch, parent, false));
                     } else {
                         throw new IllegalArgumentException("Unknown viewType: " + viewType);
                     }
@@ -169,117 +130,6 @@ public class MainActivity extends Activity implements InsetsChangedListener {
         CarUiRecyclerView prv = findViewById(R.id.list);
         prv.setAdapter(mAdapter);
 
-        initLeakCanary();
-    }
-
-    private void initLeakCanary() {
-        // This sets LeakCanary to report errors after a single leak instead of 5, and to ask for
-        // permission to use storage, which it needs to work.
-        //
-        // Equivalent to this non-reflection code:
-        //
-        // Config config = LeakCanary.INSTANCE.getConfig();
-        // LeakCanary.INSTANCE.setConfig(config.copy(config.getDumpHeap(),
-        //     config.getDumpHeapWhenDebugging(),
-        //     1,
-        //     config.getReferenceMatchers(),
-        //     config.getObjectInspectors(),
-        //     config.getOnHeapAnalyzedListener(),
-        //     config.getMetatadaExtractor(),
-        //     config.getComputeRetainedHeapSize(),
-        //     config.getMaxStoredHeapDumps(),
-        //     true,
-        //     config.getUseExperimentalLeakFinders()));
-        try {
-            Class<?> canaryClass = Class.forName("leakcanary.LeakCanary");
-            try {
-                Class<?> onHeapAnalyzedListenerClass =
-                        Class.forName("leakcanary.OnHeapAnalyzedListener");
-                Class<?> metadataExtractorClass = Class.forName("shark.MetadataExtractor");
-                Method getConfig = canaryClass.getMethod("getConfig");
-                Class<?> configClass = getConfig.getReturnType();
-                Method setConfig = canaryClass.getMethod("setConfig", configClass);
-                Method copy = configClass.getMethod("copy", boolean.class, boolean.class,
-                        int.class, List.class, List.class, onHeapAnalyzedListenerClass,
-                        metadataExtractorClass, boolean.class, int.class, boolean.class,
-                        boolean.class);
-
-                Object canary = canaryClass.getField("INSTANCE").get(null);
-                Object currentConfig = getConfig.invoke(canary);
-
-                Boolean dumpHeap = (Boolean) configClass
-                        .getMethod("getDumpHeap").invoke(currentConfig);
-                Boolean dumpHeapWhenDebugging = (Boolean) configClass
-                        .getMethod("getDumpHeapWhenDebugging").invoke(currentConfig);
-                List<?> referenceMatchers = (List<?>) configClass
-                        .getMethod("getReferenceMatchers").invoke(currentConfig);
-                List<?> objectInspectors = (List<?>) configClass
-                        .getMethod("getObjectInspectors").invoke(currentConfig);
-                Object onHeapAnalyzedListener = configClass
-                        .getMethod("getOnHeapAnalyzedListener").invoke(currentConfig);
-                // Yes, LeakCanary misspelled metadata
-                Object metadataExtractor = configClass
-                        .getMethod("getMetatadaExtractor").invoke(currentConfig);
-                Boolean computeRetainedHeapSize = (Boolean) configClass
-                        .getMethod("getComputeRetainedHeapSize").invoke(currentConfig);
-                Integer maxStoredHeapDumps = (Integer) configClass
-                        .getMethod("getMaxStoredHeapDumps").invoke(currentConfig);
-                Boolean useExperimentalLeakFinders = (Boolean) configClass
-                        .getMethod("getUseExperimentalLeakFinders").invoke(currentConfig);
-
-                setConfig.invoke(canary, copy.invoke(currentConfig,
-                        dumpHeap,
-                        dumpHeapWhenDebugging,
-                        1,
-                        referenceMatchers,
-                        objectInspectors,
-                        onHeapAnalyzedListener,
-                        metadataExtractor,
-                        computeRetainedHeapSize,
-                        maxStoredHeapDumps,
-                        true,
-                        useExperimentalLeakFinders));
-
-            } catch (ReflectiveOperationException e) {
-                Log.e("paintbooth", "Error initializing LeakCanary", e);
-                Toast.makeText(this, "Error initializing LeakCanary", Toast.LENGTH_LONG).show();
-            }
-        } catch (ClassNotFoundException e) {
-            // LeakCanary is not used in this build, do nothing.
-        }
-    }
-
-    private boolean isServiceRunning(Class<? extends Service> serviceClazz) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(
-                Integer.MAX_VALUE)) {
-            if (serviceClazz.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void setServiceRunning(Class<? extends Service> serviceClass, boolean running) {
-        Intent intent = new Intent(this, serviceClass);
-        if (!running) {
-            intent.setAction(STOP_SERVICE);
-        }
-        startForegroundService(intent);
-    }
-
-    private boolean isInPluginDenyList() {
-        return getSharedPreferences(SHARED_PREFERENCES_FILE, Context.MODE_PRIVATE)
-                .getStringSet(SHARED_PREFERENCES_PLUGIN_DENYLIST, null) != null;
-    }
-
-    private void onPluginSwitchChanged(CompoundButton unused, boolean checked) {
-        getSharedPreferences(SHARED_PREFERENCES_FILE, Context.MODE_PRIVATE)
-                .edit()
-                .putStringSet(SHARED_PREFERENCES_PLUGIN_DENYLIST,
-                        checked ? Collections.singleton("com.chassis.car.ui.plugin") : null)
-                .apply();
-        Toast.makeText(this, "Relaunch PaintBooth to see effects", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -295,7 +145,6 @@ public class MainActivity extends Activity implements InsetsChangedListener {
 
     private abstract static class ListElement {
         static final int TYPE_ACTIVITY = 0;
-        static final int TYPE_SWITCH = 1;
 
         private final String mText;
 
@@ -328,36 +177,4 @@ public class MainActivity extends Activity implements InsetsChangedListener {
         }
     }
 
-    private static class SwitchElement extends ListElement {
-        private final Supplier<Boolean> mIsCheckedSupplier;
-        private final OnCheckedChangeListener mOnCheckedChanged;
-
-        private SwitchElement(String text, Supplier<Boolean> isCheckedSupplier,
-                OnCheckedChangeListener onCheckedChanged) {
-            super(text);
-            mIsCheckedSupplier = isCheckedSupplier;
-            mOnCheckedChanged = onCheckedChanged;
-        }
-
-        public boolean isChecked() {
-            return mIsCheckedSupplier.get();
-        }
-
-        public OnCheckedChangeListener getOnCheckedChangedListener() {
-            return mOnCheckedChanged;
-        }
-
-        @Override
-        int getType() {
-            return TYPE_SWITCH;
-        }
-    }
-
-    private class ServiceElement extends SwitchElement {
-        ServiceElement(String text, Class<? extends Service> serviceClass) {
-            super(text,
-                    () -> isServiceRunning(serviceClass),
-                    (v, checked) -> setServiceRunning(serviceClass, checked));
-        }
-    }
 }

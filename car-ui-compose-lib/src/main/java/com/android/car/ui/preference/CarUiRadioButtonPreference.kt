@@ -19,9 +19,18 @@
 package com.android.car.ui.preference
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.material.icons.filled.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.RadioButton
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,7 +57,10 @@ fun CarUiRadioButtonPreference(
 ) {
     val isEnabled = enabled && !restricted
     val clickable = (enabled || clickableWhileDisabled) && !restricted
-    val contentColor = if (isEnabled) MaterialTheme.colors.onBackground else MaterialTheme.colors.onSurface.copy(alpha = 0.38f)
+    val contentColor =
+        if (isEnabled) MaterialTheme.colors.onBackground else MaterialTheme.colors.onSurface.copy(
+            alpha = 0.38f
+        )
     val background = MaterialTheme.colors.background
     val padding = dimensionResource(id = R.dimen.car_ui_pref_padding)
     val minHeight = dimensionResource(id = R.dimen.car_ui_pref_min_height)

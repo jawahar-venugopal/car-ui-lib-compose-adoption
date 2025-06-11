@@ -19,6 +19,7 @@
 package com.android.car.ui.toolbar
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
@@ -27,21 +28,22 @@ import androidx.compose.material.IconToggleButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.dimensionResource
-import com.android.car.ui.R
+import androidx.compose.ui.unit.Dp
 
 @Composable
 fun CarUiToolbarMenuItemView(
     menuItem: CarUiToolbarMenuItem,
+    iconSize: Dp,
+    iconBgSize: Dp,
     onCheckedChange: ((Boolean) -> Unit)? = null,
     onActivatedChange: ((Boolean) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     if (!menuItem.visible) return
 
-    val iconSize = dimensionResource(id = R.dimen.car_ui_toolbar_icon_size)
     val isEnabled = menuItem.enabled && !menuItem.restricted
 
     // Tint logic
@@ -52,9 +54,38 @@ fun CarUiToolbarMenuItemView(
     }
     val iconTint = if (menuItem.tinted) contentColor else Color.Unspecified
 
-    val backgroundModifier = if (menuItem.activated) {
-        modifier.background(MaterialTheme.colors.primary.copy(alpha = 0.12f), shape = CircleShape)
-    } else modifier
+    // Circular background if activated/checked
+    val backgroundColor = when {
+        menuItem.activated || (menuItem.checkable && menuItem.checked) ->
+            MaterialTheme.colors.primary.copy(alpha = 0.12f)
+
+        else -> Color.Transparent
+    }
+
+    @Composable
+    fun Content() {
+        Box(
+            modifier = Modifier
+                .size(iconBgSize)
+                .background(backgroundColor, CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            if (menuItem.icon != null && (menuItem.showIconAndTitle || menuItem.title.isNullOrEmpty())) {
+                Icon(
+                    painter = menuItem.icon,
+                    contentDescription = menuItem.title,
+                    tint = iconTint,
+                    modifier = Modifier.size(iconSize)
+                )
+            }
+            if (!menuItem.title.isNullOrEmpty() && (menuItem.showIconAndTitle || menuItem.icon == null)) {
+                Text(
+                    text = menuItem.title,
+                    color = contentColor
+                )
+            }
+        }
+    }
 
     when {
         menuItem.checkable -> {
@@ -67,22 +98,12 @@ fun CarUiToolbarMenuItemView(
                     }
                 },
                 enabled = isEnabled,
-                modifier = backgroundModifier.size(iconSize)
+                modifier = modifier.size(iconBgSize)
             ) {
-                if (menuItem.icon != null) {
-                    Icon(
-                        painter = menuItem.icon,
-                        contentDescription = menuItem.title,
-                        tint = iconTint
-                    )
-                } else if (!menuItem.title.isNullOrEmpty()) {
-                    Text(
-                        text = menuItem.title,
-                        color = contentColor
-                    )
-                }
+                Content()
             }
         }
+
         menuItem.activatable -> {
             IconButton(
                 onClick = {
@@ -92,41 +113,19 @@ fun CarUiToolbarMenuItemView(
                     }
                 },
                 enabled = isEnabled,
-                modifier = backgroundModifier.size(iconSize)
+                modifier = modifier.size(iconBgSize)
             ) {
-                if (menuItem.icon != null) {
-                    Icon(
-                        painter = menuItem.icon,
-                        contentDescription = menuItem.title,
-                        tint = iconTint
-                    )
-                } else if (!menuItem.title.isNullOrEmpty()) {
-                    Text(
-                        text = menuItem.title,
-                        color = contentColor
-                    )
-                }
+                Content()
             }
         }
+
         else -> {
             IconButton(
                 onClick = { if (isEnabled) menuItem.onClick?.invoke() },
                 enabled = isEnabled,
-                modifier = backgroundModifier.size(iconSize)
+                modifier = modifier.size(iconBgSize)
             ) {
-                if (menuItem.icon != null && (menuItem.showIconAndTitle || menuItem.title.isNullOrEmpty())) {
-                    Icon(
-                        painter = menuItem.icon,
-                        contentDescription = menuItem.title,
-                        tint = iconTint
-                    )
-                }
-                if (!menuItem.title.isNullOrEmpty() && (menuItem.showIconAndTitle || menuItem.icon == null)) {
-                    Text(
-                        text = menuItem.title,
-                        color = contentColor
-                    )
-                }
+                Content()
             }
         }
     }

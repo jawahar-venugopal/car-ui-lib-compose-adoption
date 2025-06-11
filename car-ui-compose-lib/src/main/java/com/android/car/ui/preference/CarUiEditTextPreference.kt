@@ -67,7 +67,10 @@ fun CarUiEditTextPreference(
     var tempValue by remember { mutableStateOf(value) }
 
     val isEnabled = enabled && !restricted
-    val contentColor = if (isEnabled) MaterialTheme.colors.onBackground else MaterialTheme.colors.onSurface.copy(alpha = 0.38f)
+    val contentColor =
+        if (isEnabled) MaterialTheme.colors.onBackground else MaterialTheme.colors.onSurface.copy(
+            alpha = 0.38f
+        )
     val background = MaterialTheme.colors.background
     val padding = dimensionResource(id = R.dimen.car_ui_pref_padding)
     val minHeight = dimensionResource(id = R.dimen.car_ui_pref_min_height)
@@ -103,7 +106,9 @@ fun CarUiEditTextPreference(
                     painter = icon,
                     contentDescription = null,
                     tint = contentColor,
-                    modifier = Modifier.size(iconSize).padding(end = iconSpacing)
+                    modifier = Modifier
+                        .size(iconSize)
+                        .padding(end = iconSpacing)
                 )
             }
             Column(Modifier.weight(1f)) {

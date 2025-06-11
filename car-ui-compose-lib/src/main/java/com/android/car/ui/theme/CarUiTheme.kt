@@ -18,64 +18,45 @@
  */
 package com.android.car.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
+import android.annotation.SuppressLint
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Shapes
 import androidx.compose.material.Typography
 import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.android.car.ui.R
 
+@SuppressLint("ConflictingOnColor")
 @Composable
-fun buildCarUiColors(darkTheme: Boolean): Colors {
-    val primary = colorResource(id = R.color.car_ui_primary_text_color)
-    val secondary = colorResource(id = R.color.car_ui_secondary_text_color)
+fun buildCarUiColors(): Colors {
+    val primary = colorResource(id = R.color.car_ui_primary_color)
     val background = colorResource(id = R.color.car_ui_activity_background_color)
-    val surface = colorResource(id = R.color.car_ui_surface_color)
-    val onPrimary = colorResource(id = R.color.car_ui_primary_text_color)
-    val onSecondary = colorResource(id = R.color.car_ui_secondary_text_color)
-    val onBackground = colorResource(id = R.color.car_ui_primary_text_color)
-    val onSurface = colorResource(id = R.color.car_ui_primary_text_color)
+    val surface = colorResource(id = R.color.car_ui_activity_background_color)
+    val onPrimary = colorResource(id = R.color.car_ui_on_primary_color)
 
-    return if (darkTheme) {
-        darkColors(
-            primary = primary,
-            secondary = secondary,
-            background = background,
-            surface = surface,
-            onPrimary = onPrimary,
-            onSecondary = onSecondary,
-            onBackground = onBackground,
-            onSurface = onSurface
-        )
-    } else {
-        lightColors(
-            primary = primary,
-            secondary = secondary,
-            background = background,
-            surface = surface,
-            onPrimary = onPrimary,
-            onSecondary = onSecondary,
-            onBackground = onBackground,
-            onSurface = onSurface
-        )
-    }
+    return darkColors(
+        primary = primary,
+        background = background,
+        surface = surface,
+        onPrimary = onPrimary,
+    )
 }
 
 @Composable
 fun buildCarUiTypography(): Typography {
     return Typography(
-        h6 = TextStyle(
+        h1 = TextStyle(
             fontFamily = FontFamily.Default,
-            fontSize = dimensionResource(id = R.dimen.car_ui_toolbar_title_text_size).value.sp
+            fontSize = dimensionResource(id = R.dimen.car_ui_toolbar_title_text_size).value.sp,
+            lineHeight = 37.sp,
         ),
         subtitle1 = TextStyle(
             fontFamily = FontFamily.Default,
@@ -88,6 +69,12 @@ fun buildCarUiTypography(): Typography {
         body2 = TextStyle(
             fontFamily = FontFamily.Default,
             fontSize = dimensionResource(id = R.dimen.car_ui_secondary_text_size).value.sp
+        ),
+        button = TextStyle(
+            fontWeight = FontWeight.Medium,
+            fontFamily = FontFamily.Default,
+            fontSize = 26.sp,
+            lineHeight = 28.sp,
         )
         // Add more styles as needed!
     )
@@ -104,11 +91,10 @@ fun buildCarUiShapes(): Shapes {
 
 @Composable
 fun CarUiTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
     MaterialTheme(
-        colors = buildCarUiColors(darkTheme),
+        colors = buildCarUiColors(),
         typography = buildCarUiTypography(),
         shapes = buildCarUiShapes(),
         content = content

@@ -64,7 +64,8 @@ fun CarUiContentListItem(
     val avatarIconSize = dimensionResource(id = R.dimen.car_ui_content_list_item_avatar_size)
     val contentIconSize = dimensionResource(id = R.dimen.car_ui_content_list_item_content_size)
     val iconSpacing = dimensionResource(id = R.dimen.car_ui_content_list_item_icon_spacing)
-    val cornerRadius = dimensionResource(id = R.dimen.car_ui_content_list_item_content_corner_radius)
+    val cornerRadius =
+        dimensionResource(id = R.dimen.car_ui_content_list_item_content_corner_radius)
 
     Surface(
         modifier = Modifier
@@ -91,6 +92,7 @@ fun CarUiContentListItem(
                                 .background(MaterialTheme.colors.onSurface.copy(alpha = 0.12f))
                         )
                     }
+
                     CarUiContentListItemIconType.CONTENT -> {
                         Image(
                             painter = it,
@@ -100,6 +102,7 @@ fun CarUiContentListItem(
                                 .clip(RoundedCornerShape(cornerRadius))
                         )
                     }
+
                     CarUiContentListItemIconType.STANDARD -> {
                         Image(
                             painter = it,

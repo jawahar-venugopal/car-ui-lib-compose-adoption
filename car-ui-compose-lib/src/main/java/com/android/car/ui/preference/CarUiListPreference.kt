@@ -64,7 +64,10 @@ fun CarUiListPreference(
 ) {
     var dialogOpen by remember { mutableStateOf(false) }
     val isEnabled = enabled && !restricted
-    val contentColor = if (isEnabled) MaterialTheme.colors.onBackground else MaterialTheme.colors.onSurface.copy(alpha = 0.38f)
+    val contentColor =
+        if (isEnabled) MaterialTheme.colors.onBackground else MaterialTheme.colors.onSurface.copy(
+            alpha = 0.38f
+        )
     val background = MaterialTheme.colors.background
     val padding = dimensionResource(id = R.dimen.car_ui_pref_padding)
     val minHeight = dimensionResource(id = R.dimen.car_ui_pref_min_height)
@@ -100,7 +103,9 @@ fun CarUiListPreference(
                     painter = icon,
                     contentDescription = null,
                     tint = contentColor,
-                    modifier = Modifier.size(iconSize).padding(end = iconSpacing)
+                    modifier = Modifier
+                        .size(iconSize)
+                        .padding(end = iconSpacing)
                 )
             }
             Column(Modifier.weight(1f)) {
@@ -137,9 +142,12 @@ fun CarUiListPreference(
 
     // Dialog for selection
     if (dialogOpen) {
-        val dialogItemVerticalPadding = dimensionResource(id = R.dimen.car_ui_dialog_list_item_vertical_padding)
-        val dialogItemHorizontalPadding = dimensionResource(id = R.dimen.car_ui_dialog_list_item_horizontal_padding)
-        val dialogItemIconMarginEnd = dimensionResource(id = R.dimen.car_ui_dialog_list_item_icon_margin_end)
+        val dialogItemVerticalPadding =
+            dimensionResource(id = R.dimen.car_ui_dialog_list_item_vertical_padding)
+        val dialogItemHorizontalPadding =
+            dimensionResource(id = R.dimen.car_ui_dialog_list_item_horizontal_padding)
+        val dialogItemIconMarginEnd =
+            dimensionResource(id = R.dimen.car_ui_dialog_list_item_icon_margin_end)
         AlertDialog(
             onDismissRequest = { dialogOpen = false },
             title = { Text(title) },
@@ -153,7 +161,10 @@ fun CarUiListPreference(
                                     dialogOpen = false
                                     if (i != selectedIndex) onEntrySelected(i)
                                 }
-                                .padding(vertical = dialogItemVerticalPadding, horizontal = dialogItemHorizontalPadding)
+                                .padding(
+                                    vertical = dialogItemVerticalPadding,
+                                    horizontal = dialogItemHorizontalPadding
+                                )
                         ) {
                             RadioButton(selected = i == selectedIndex, onClick = null)
                             Spacer(Modifier.width(dialogItemIconMarginEnd))

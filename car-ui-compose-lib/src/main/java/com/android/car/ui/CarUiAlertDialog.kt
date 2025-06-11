@@ -128,9 +128,10 @@ fun CarUiAlertDialog(
                                 var filtered = it
                                 params.editTextInputFilters?.forEach { filter ->
                                     val spanned = android.text.SpannableStringBuilder(filtered)
-                                    filter.filter(filtered, 0, filtered.length, spanned, 0, 0)?.let { result ->
-                                        filtered = result.toString()
-                                    }
+                                    filter.filter(filtered, 0, filtered.length, spanned, 0, 0)
+                                        ?.let { result ->
+                                            filtered = result.toString()
+                                        }
                                 }
                                 value = filtered
                                 onValueChange(filtered)

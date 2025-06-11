@@ -38,5 +38,5 @@ data class CarUiToolbarMenuItem(
     val showIconAndTitle: Boolean = false,
     val tinted: Boolean = true,
     val primary: Boolean = false,
-    val restricted: Boolean = false // flows from parent/app!
+    val restricted: Boolean = false
 )

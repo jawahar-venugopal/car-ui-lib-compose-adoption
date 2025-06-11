@@ -19,7 +19,9 @@
 package com.android.car.ui.recyclerview
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.RadioButton
 import androidx.compose.material.Surface
@@ -52,7 +54,11 @@ fun CarUiRadioButtonListItem(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = title, style = MaterialTheme.typography.body1, modifier = Modifier.weight(1f))
+            Text(
+                text = title,
+                style = MaterialTheme.typography.body1,
+                modifier = Modifier.weight(1f)
+            )
             RadioButton(
                 selected = selected,
                 onClick = { if (enabled && !restricted && onClick != null) onClick() },

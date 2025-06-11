@@ -54,7 +54,10 @@ fun CarUiPreference(
 ) {
     val isEnabled = enabled && !restricted
     val clickable = isEnabled || clickableWhileDisabled
-    val contentColor = if (isEnabled) MaterialTheme.colors.onBackground else MaterialTheme.colors.onSurface.copy(alpha = 0.38f)
+    val contentColor =
+        if (isEnabled) MaterialTheme.colors.onBackground else MaterialTheme.colors.onSurface.copy(
+            alpha = 0.38f
+        )
     val background = MaterialTheme.colors.background
     val padding = dimensionResource(id = R.dimen.car_ui_pref_padding)
     val minHeight = dimensionResource(id = R.dimen.car_ui_pref_min_height)
