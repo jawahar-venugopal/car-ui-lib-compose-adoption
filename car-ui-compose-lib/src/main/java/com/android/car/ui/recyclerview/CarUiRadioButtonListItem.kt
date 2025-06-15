@@ -18,52 +18,48 @@
  */
 package com.android.car.ui.recyclerview
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.RadioButton
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.RadioButtonColors
+import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.dimensionResource
 import com.android.car.ui.R
 
 @Composable
 fun CarUiRadioButtonListItem(
-    title: String,
+    title: String? = null,
+    body: String? = null,
+    icon: Painter? = null,
+    iconType: CarUiContentListItemIconType = CarUiContentListItemIconType.STANDARD,
     selected: Boolean,
     enabled: Boolean = true,
     restricted: Boolean = false,
-    onClick: (() -> Unit)? = null,
+    onSelectedChange: ((Boolean) -> Unit)? = null,
 ) {
-    val horizontalPadding = dimensionResource(id = R.dimen.car_ui_list_item_horizontal_padding)
-    val verticalPadding = dimensionResource(id = R.dimen.car_ui_list_item_vertical_padding)
-
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(if (enabled && !restricted && onClick != null) Modifier.clickable { onClick() } else Modifier)
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(horizontal = horizontalPadding, vertical = verticalPadding)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier.weight(1f)
-            )
+    CarUiContentListItem(
+        title = title,
+        body = body,
+        icon = icon,
+        iconType = iconType,
+        enabled = enabled,
+        restricted = restricted,
+        onClick = null,
+        trailingContent = {
             RadioButton(
                 selected = selected,
-                onClick = { if (enabled && !restricted && onClick != null) onClick() },
-                enabled = enabled && !restricted
+                enabled = enabled && !restricted,
+                onClick = {
+                    if (enabled && !restricted) onSelectedChange?.invoke(!selected)
+                },
+                modifier = Modifier.scale(2.0f),
+                colors = RadioButtonDefaults.colors(unselectedColor = MaterialTheme.colors.onSurface)
             )
         }
-    }
+    )
 }

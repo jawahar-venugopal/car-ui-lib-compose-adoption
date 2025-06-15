@@ -18,6 +18,8 @@
  */
 package com.android.car.ui.toolbar
 
+import android.app.Activity
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -51,7 +54,6 @@ fun CarUiToolbar(
     title: String = "",
     subtitle: String? = null,
     navIconType: CarUiToolbarNavIconType = CarUiToolbarNavIconType.None,
-    onNavClick: (() -> Unit)? = null,
     logo: Painter? = null,
     menuItems: List<CarUiToolbarMenuItem> = emptyList(),
     showOverflowMenu: Boolean = false,
@@ -106,9 +108,15 @@ fun CarUiToolbar(
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier.fillMaxHeight()
                 ) {
+                    val context = LocalContext.current
+                    val activity = context as? ComponentActivity
                     if (navIconType != CarUiToolbarNavIconType.None) {
                         IconButton(
-                            onClick = { if (!restricted) onNavClick?.invoke() },
+                            onClick = { when (navIconType) {
+                                CarUiToolbarNavIconType.Back -> activity?.onBackPressedDispatcher?.onBackPressed()
+                                CarUiToolbarNavIconType.Close -> activity?.finish()
+                                else -> {}
+                            } },
                             enabled = !restricted,
                             modifier = Modifier.size(navIconSize)
                         ) {
@@ -120,9 +128,7 @@ fun CarUiToolbar(
                                 },
                                 contentDescription = navIconType.name,
                                 modifier = Modifier.fillMaxSize(),
-                                tint = if (!restricted) MaterialTheme.colors.onPrimary else MaterialTheme.colors.onSurface.copy(
-                                    alpha = 0.38f
-                                )
+                                tint = MaterialTheme.colors.onSurface
                             )
                         }
                     }

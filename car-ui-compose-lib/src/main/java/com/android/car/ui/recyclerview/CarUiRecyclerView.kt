@@ -21,6 +21,7 @@ package com.android.car.ui.recyclerview
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -49,6 +50,7 @@ fun <T> CarUiRecyclerView(
     modifier: Modifier = Modifier,
     itemContent: @Composable (T) -> Unit
 ) {
+    val recyclerViewPadding = dimensionResource(R.dimen.car_ui_scrollbar_width)
     val dividerColor = colorResource(id = R.color.car_ui_divider_color)
     val dividerHeight = dimensionResource(id = R.dimen.car_ui_divider_height)
     dimensionResource(id = R.dimen.car_ui_scrollbar_thickness)
@@ -66,7 +68,9 @@ fun <T> CarUiRecyclerView(
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(numOfColumns),
                     state = gridState,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(start = recyclerViewPadding, end = recyclerViewPadding)
                 ) {
                     items(items) { item ->
                         itemContent(item)
@@ -74,17 +78,21 @@ fun <T> CarUiRecyclerView(
                     }
                 }
             }
-            CarUiScrollbar(
-                gridState = gridState,
-                modifier = Modifier.align(Alignment.CenterStart)
-            )
+            if (items.size > 3) {
+                CarUiScrollbar(
+                    gridState = gridState,
+                    modifier = Modifier.align(Alignment.CenterStart)
+                )
+            }
         } else {
             val listState = rememberLazyListState()
             // List with scrollbar
             Box {
                 LazyColumn(
                     state = listState,
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(start = recyclerViewPadding, end = recyclerViewPadding)
                 ) {
                     items(items) { item ->
                         itemContent(item)

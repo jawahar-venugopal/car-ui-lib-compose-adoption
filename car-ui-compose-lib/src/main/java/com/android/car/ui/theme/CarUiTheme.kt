@@ -38,15 +38,21 @@ import com.android.car.ui.R
 @Composable
 fun buildCarUiColors(): Colors {
     val primary = colorResource(id = R.color.car_ui_primary_color)
+    val secondary = colorResource(id = R.color.car_ui_secondary_color)
     val background = colorResource(id = R.color.car_ui_activity_background_color)
-    val surface = colorResource(id = R.color.car_ui_activity_background_color)
+    val surface = colorResource(id = R.color.car_ui_surface_color)
     val onPrimary = colorResource(id = R.color.car_ui_on_primary_color)
+    val onSurface = colorResource(id = R.color.car_ui_text_color_primary)
+    val onSecondary = colorResource(id = R.color.car_ui_on_secondary_color)
 
     return darkColors(
         primary = primary,
+        secondary = secondary,
         background = background,
         surface = surface,
         onPrimary = onPrimary,
+        onSurface = onSurface,
+        onSecondary = onSecondary
     )
 }
 
@@ -55,26 +61,29 @@ fun buildCarUiTypography(): Typography {
     return Typography(
         h1 = TextStyle(
             fontFamily = FontFamily.Default,
-            fontSize = dimensionResource(id = R.dimen.car_ui_toolbar_title_text_size).value.sp,
-            lineHeight = 37.sp,
+            fontSize = dimensionResource(id = R.dimen.car_ui_body1_size).value.sp,
+        ),
+        h3 = TextStyle(
+            fontFamily = FontFamily.Default,
+            fontWeight = FontWeight.Medium,
+            fontSize = dimensionResource(id = R.dimen.car_ui_body3_size).value.sp,
         ),
         subtitle1 = TextStyle(
             fontFamily = FontFamily.Default,
-            fontSize = dimensionResource(id = R.dimen.car_ui_header_list_item_text_size).value.sp
+            fontSize = dimensionResource(id = R.dimen.car_ui_body3_size).value.sp
         ),
         body1 = TextStyle(
             fontFamily = FontFamily.Default,
-            fontSize = dimensionResource(id = R.dimen.car_ui_text_size).value.sp
+            fontSize = dimensionResource(id = R.dimen.car_ui_body1_size).value.sp
         ),
         body2 = TextStyle(
             fontFamily = FontFamily.Default,
-            fontSize = dimensionResource(id = R.dimen.car_ui_secondary_text_size).value.sp
+            fontSize = dimensionResource(id = R.dimen.car_ui_body2_size).value.sp
         ),
         button = TextStyle(
             fontWeight = FontWeight.Medium,
             fontFamily = FontFamily.Default,
-            fontSize = 26.sp,
-            lineHeight = 28.sp,
+            fontSize = dimensionResource(id = R.dimen.car_ui_button_text_size).value.sp,
         )
         // Add more styles as needed!
     )

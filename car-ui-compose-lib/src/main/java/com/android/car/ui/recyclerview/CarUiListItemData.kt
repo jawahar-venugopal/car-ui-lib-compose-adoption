@@ -22,34 +22,74 @@ package com.android.car.ui.recyclerview
 import androidx.compose.ui.graphics.painter.Painter
 
 sealed class CarUiListItemData {
+
+    data class Header(
+        val text: String,
+        val body : String? = null
+    ) : CarUiListItemData()
+
     data class Content(
-        val title: String,
+        val title: String? = null,
         val body: String? = null,
         val icon: Painter? = null,
         val iconType: CarUiContentListItemIconType = CarUiContentListItemIconType.STANDARD,
-        val chevron: Boolean = false,
         val enabled: Boolean = true,
         val restricted: Boolean = false,
         val onClick: (() -> Unit)? = null
     ) : CarUiListItemData()
 
-    data class Header(
-        val text: String
-    ) : CarUiListItemData()
-
-    data class CheckBox(
+    data class ActionCheckBox(
         val title: String,
-        val checked: Boolean,
+        val body : String? = null,
+        val icon: Painter? = null,
+        val iconType: CarUiContentListItemIconType = CarUiContentListItemIconType.STANDARD,
+        val checked: Boolean= false,
         val enabled: Boolean = true,
         val restricted: Boolean = false,
         val onCheckedChange: ((Boolean) -> Unit)? = null
     ) : CarUiListItemData()
 
-    data class RadioButton(
-        val title: String,
-        val selected: Boolean,
+    data class ActionChevron(
+        val title: String? = null,
+        val body: String? = null,
+        val icon: Painter? = null,
+        val iconType: CarUiContentListItemIconType = CarUiContentListItemIconType.STANDARD,
         val enabled: Boolean = true,
         val restricted: Boolean = false,
         val onClick: (() -> Unit)? = null
+    ) : CarUiListItemData()
+
+    data class ActionIcon(
+        val title: String? = null,
+        val body: String? = null,
+        val icon: Painter? = null,
+        val iconType: CarUiContentListItemIconType = CarUiContentListItemIconType.STANDARD,
+        val trailingIcon: Painter,
+        val enabled: Boolean = true,
+        val restricted: Boolean = false,
+        val onClick: (() -> Unit)? = null,
+        val onSupplementalIconClick: (() -> Unit)? = null,
+    ) : CarUiListItemData()
+
+    data class ActionRadioButton(
+        val title: String? = null,
+        val body : String? = null,
+        val icon: Painter? = null,
+        val iconType: CarUiContentListItemIconType = CarUiContentListItemIconType.STANDARD,
+        val selected: Boolean,
+        val enabled: Boolean = true,
+        val restricted: Boolean = false,
+        val onSelectedChange: ((Boolean) -> Unit)? = null
+    ) : CarUiListItemData()
+
+    data class ActionSwitch(
+        val title: String?= null,
+        val body : String? = null,
+        val icon: Painter? = null,
+        val iconType: CarUiContentListItemIconType = CarUiContentListItemIconType.STANDARD,
+        val checked: Boolean = false,
+        val enabled: Boolean = true,
+        val restricted: Boolean = false,
+        val onCheckedChange: ((Boolean) -> Unit)? = null
     ) : CarUiListItemData()
 }

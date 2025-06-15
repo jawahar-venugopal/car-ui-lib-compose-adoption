@@ -18,26 +18,50 @@
  */
 package com.android.car.ui.recyclerview
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.android.car.ui.R
 
 @Composable
 fun CarUiHeaderListItem(
     text: String,
+    body: String? = null,
     modifier: Modifier = Modifier
 ) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.subtitle2.copy(
-            fontSize = dimensionResource(id = R.dimen.car_ui_header_list_item_text_size).value.sp
-        ),
-        modifier = modifier
-            .padding(vertical = dimensionResource(id = R.dimen.car_ui_header_list_item_vertical_padding))
-    )
+    Column(modifier = modifier.height(dimensionResource(R.dimen.car_ui_list_item_header_height)).fillMaxWidth(),
+        verticalArrangement = Arrangement.Center) {
+        Text(
+            text = text,
+            color = MaterialTheme.colors.primary,
+            style = MaterialTheme.typography.h3,
+            textAlign = TextAlign.Start,
+            modifier = modifier.wrapContentHeight()
+        )
+        if (!body.isNullOrEmpty()) {
+            Text(
+                text = body,
+                color = MaterialTheme.colors.onSecondary,
+                style = MaterialTheme.typography.h3,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.wrapContentHeight()
+                    .padding(start = dimensionResource(R.dimen.car_ui_list_item_text_no_icon_start_margin))
+            )
+        }
+    }
 }

@@ -77,8 +77,6 @@ public class DialogsActivity extends Activity implements InsetsChangedListener {
                 v -> showDialogWithCheckbox()));
         mButtons.add(Pair.create(R.string.dialog_show_dialog_no_title,
                 v -> showDialogWithoutTitle()));
-        mButtons.add(Pair.create(R.string.dialog_show_toast,
-                v -> showToast()));
         mButtons.add(Pair.create(R.string.dialog_show_subtitle,
                 v -> showDialogWithSubtitle()));
         mButtons.add(Pair.create(R.string.dialog_show_subtitle_and_icon,
@@ -89,18 +87,6 @@ public class DialogsActivity extends Activity implements InsetsChangedListener {
                 v -> showDialogWithSingleChoiceItems()));
         mButtons.add(Pair.create(R.string.dialog_show_list_items_without_default_button,
                 v -> showDialogWithListItemsWithoutDefaultButton()));
-        mButtons.add(Pair.create(R.string.dialog_show_unfocusable_list_items,
-                v -> showDialogWithUnfocusableListItems()));
-        mButtons.add(Pair.create(R.string.dialog_show_empty_list_items,
-                v -> showDialogWithEmptyList()));
-        mButtons.add(Pair.create(R.string.dialog_show_permission_dialog,
-                v -> showPermissionDialog()));
-        mButtons.add(Pair.create(R.string.dialog_show_multi_permission_dialog,
-                v -> showMultiPermissionDialog()));
-        mButtons.add(Pair.create(R.string.dialog_show_foreground_permission_dialog,
-                v -> showForegroundPermissionDialog()));
-        mButtons.add(Pair.create(R.string.dialog_show_background_permission_dialog,
-                v -> showBackgroundPermissionDialog()));
 
         CarUiRecyclerView recyclerView = requireViewById(R.id.list);
         recyclerView.setAdapter(mAdapter);

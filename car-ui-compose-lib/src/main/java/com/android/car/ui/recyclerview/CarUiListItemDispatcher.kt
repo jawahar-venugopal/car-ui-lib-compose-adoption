@@ -23,35 +23,75 @@ import androidx.compose.runtime.Composable
 @Composable
 fun CarUiListItemDispatcher(item: CarUiListItemData) {
     when (item) {
+
+        is CarUiListItemData.Header -> CarUiHeaderListItem(
+            text = item.text,
+            body = item.body
+        )
+
         is CarUiListItemData.Content -> CarUiContentListItem(
             title = item.title,
             body = item.body,
             icon = item.icon,
             iconType = item.iconType,
-            chevron = item.chevron,
             enabled = item.enabled,
             restricted = item.restricted,
             onClick = item.onClick
         )
 
-        is CarUiListItemData.Header -> CarUiHeaderListItem(
-            text = item.text
-        )
-
-        is CarUiListItemData.CheckBox -> CarUiCheckBoxListItem(
+        is CarUiListItemData.ActionCheckBox -> CarUiCheckBoxListItem(
             title = item.title,
+            body = item.body,
+            icon = item.icon,
+            iconType = item.iconType,
             checked = item.checked,
             enabled = item.enabled,
             restricted = item.restricted,
             onCheckedChange = item.onCheckedChange
         )
 
-        is CarUiListItemData.RadioButton -> CarUiRadioButtonListItem(
+        is CarUiListItemData.ActionChevron -> CarUiChevronListItem(
             title = item.title,
-            selected = item.selected,
+            body = item.body,
+            icon = item.icon,
+            iconType = item.iconType,
             enabled = item.enabled,
             restricted = item.restricted,
             onClick = item.onClick
+        )
+
+        is CarUiListItemData.ActionIcon -> CarUiIconListItem(
+            title = item.title,
+            body = item.body,
+            icon = item.icon,
+            iconType = item.iconType,
+            trailingIcon = item.trailingIcon,
+            enabled = item.enabled,
+            restricted = item.restricted,
+            onClick = item.onClick,
+            onSupplementalIconClick = item.onSupplementalIconClick
+        )
+
+        is CarUiListItemData.ActionRadioButton -> CarUiRadioButtonListItem(
+            title = item.title,
+            body = item.body,
+            icon = item.icon,
+            iconType = item.iconType,
+            selected = item.selected,
+            enabled = item.enabled,
+            restricted = item.restricted,
+            onSelectedChange = item.onSelectedChange
+        )
+
+        is CarUiListItemData.ActionSwitch -> CarUiSwitchListItem(
+            title = item.title,
+            body = item.body,
+            icon = item.icon,
+            iconType = item.iconType,
+            checked = item.checked,
+            enabled = item.enabled,
+            restricted = item.restricted,
+            onCheckedChange = item.onCheckedChange
         )
     }
 }

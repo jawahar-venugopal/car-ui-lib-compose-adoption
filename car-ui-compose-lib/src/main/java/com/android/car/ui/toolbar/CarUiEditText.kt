@@ -26,6 +26,7 @@ import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 
@@ -59,7 +60,7 @@ fun CarUiEditText(
             onDone = { onImeAction?.invoke() }
         ),
         colors = TextFieldDefaults.textFieldColors(
-            backgroundColor = MaterialTheme.colors.surface,
+            backgroundColor = colorResource(android.R.color.transparent),
             disabledTextColor = MaterialTheme.colors.onSurface.copy(alpha = 0.38f),
             cursorColor = MaterialTheme.colors.primary,
             focusedIndicatorColor = MaterialTheme.colors.primary,

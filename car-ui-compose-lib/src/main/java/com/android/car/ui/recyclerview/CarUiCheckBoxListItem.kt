@@ -18,60 +18,48 @@
  */
 package com.android.car.ui.recyclerview
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Checkbox
+import androidx.compose.material.CheckboxColors
+import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.unit.dp
 import com.android.car.ui.R
 
 @Composable
 fun CarUiCheckBoxListItem(
-    title: String,
-    checked: Boolean,
+    title: String? = null,
+    body: String? = null,
+    icon: Painter? = null,
+    iconType: CarUiContentListItemIconType = CarUiContentListItemIconType.STANDARD,
+    checked: Boolean = false,
     enabled: Boolean = true,
     restricted: Boolean = false,
     onCheckedChange: ((Boolean) -> Unit)? = null,
 ) {
-    val horizontalPadding = dimensionResource(id = R.dimen.car_ui_list_item_horizontal_padding)
-    val verticalPadding = dimensionResource(id = R.dimen.car_ui_list_item_vertical_padding)
-
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(if (enabled && !restricted && onCheckedChange != null) Modifier.clickable {
-                onCheckedChange(
-                    !checked
-                )
-            } else Modifier)
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(horizontal = horizontalPadding, vertical = verticalPadding)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier.weight(1f)
-            )
+    CarUiContentListItem(
+        title = title,
+        body = body,
+        icon = icon,
+        iconType = iconType,
+        enabled = enabled,
+        restricted = restricted,
+        onClick = null,
+        trailingContent = {
             Checkbox(
                 checked = checked,
+                enabled = enabled && !restricted,
                 onCheckedChange = {
-                    if (enabled && !restricted && onCheckedChange != null) onCheckedChange(
-                        it
-                    )
+                    if (enabled && !restricted) onCheckedChange?.invoke(it)
                 },
-                enabled = enabled && !restricted
+                modifier = Modifier.scale(2.0f),
+                colors = CheckboxDefaults.colors(uncheckedColor = MaterialTheme.colors.onSurface)
             )
         }
-    }
+    )
 }

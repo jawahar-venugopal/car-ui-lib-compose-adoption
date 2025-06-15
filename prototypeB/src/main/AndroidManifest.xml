@@ -41,6 +41,21 @@
                 android:name="distractionOptimized"
                 android:value="true" />
         </activity>
-
+        <activity
+            android:name=".caruirecyclerview.CarUiRecyclerViewActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".caruirecyclerview.GridCarUiRecyclerViewActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".caruirecyclerview.CarUiListItemActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".dialogs.DialogsActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
     </application>
 </manifest>

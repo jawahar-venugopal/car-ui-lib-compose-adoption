@@ -60,7 +60,6 @@ fun CarUiScrollbar(
     listState: LazyListState? = null,
     gridState: LazyGridState? = null,
     thumbColor: Color = colorResource(id = R.color.car_ui_scrollbar_thumb_color),
-    trackColor: Color = colorResource(id = R.color.car_ui_scrollbar_track_color),
     thumbMinHeight: Dp = dimensionResource(id = R.dimen.car_ui_scrollbar_thumb_min_height),
     thumbRadius: Dp = dimensionResource(id = R.dimen.car_ui_scrollbar_thumb_radius),
     buttonSize: Dp = dimensionResource(id = R.dimen.car_ui_scrollbar_button_size),
@@ -71,7 +70,18 @@ fun CarUiScrollbar(
     onPageDown: (() -> Unit)? = null
 ) {
     require((listState != null) xor (gridState != null)) { "Pass either listState or gridState, not both or neither." }
-
+    val canScrollForward = when {
+        listState != null -> listState.canScrollForward
+        gridState != null -> gridState.canScrollForward
+        else -> false
+    }
+    val canScrollBackward = when {
+        listState != null -> listState.canScrollBackward
+        gridState != null -> gridState.canScrollBackward
+        else -> false
+    }
+    val isScrollable = canScrollForward || canScrollBackward
+    if (!isScrollable) return
     val scrollbarWidth = dimensionResource(id = R.dimen.car_ui_scrollbar_width)
     val thumbWidth = dimensionResource(id = R.dimen.car_ui_scrollbar_thumb_width)
     val coroutineScope = rememberCoroutineScope()
@@ -164,7 +174,7 @@ fun CarUiScrollbar(
                 .fillMaxHeight()
                 .width(scrollbarWidth)
                 .padding(top = buttonSize, bottom = buttonSize)
-                .background(trackColor, shape = RoundedCornerShape(thumbRadius))
+                .background(colorResource(id = R.color.car_ui_scrollbar_track_color))
                 .onGloballyPositioned {
                     scrollbarHeightPx.value = it.size.height
                 }

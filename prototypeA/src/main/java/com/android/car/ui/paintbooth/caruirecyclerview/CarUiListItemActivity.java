@@ -62,50 +62,40 @@ public class CarUiListItemActivity extends Activity implements InsetsChangedList
 
     private ArrayList<CarUiListItem> generateSampleData() {
         Context context = this;
-
         CarUiHeaderListItem header = new CarUiHeaderListItem(getString(R.string.first_header));
         mData.add(header);
-
         CarUiContentListItem item = new CarUiContentListItem(CarUiContentListItem.Action.NONE);
         item.setTitle(getString(R.string.test_title));
         item.setBody(getString(R.string.test_body));
         mData.add(item);
-
         item = new CarUiContentListItem(CarUiContentListItem.Action.NONE);
         item.setTitle(getString(R.string.test_title_no_body));
         mData.add(item);
-
         header = new CarUiHeaderListItem(getString(R.string.random_header),
                 getString(R.string.header_with_body));
         mData.add(header);
-
         item = new CarUiContentListItem(CarUiContentListItem.Action.NONE);
         item.setBody(getString(R.string.test_body_no_title));
         mData.add(item);
-
         item = new CarUiContentListItem(CarUiContentListItem.Action.NONE);
         item.setTitle(getString(R.string.test_title));
         item.setIcon(getDrawable(R.drawable.ic_launcher));
         mData.add(item);
-
         item = new CarUiContentListItem(CarUiContentListItem.Action.NONE);
         item.setTitle(getString(R.string.test_title));
         item.setBody(getString(R.string.test_body));
         item.setIcon(getDrawable(R.drawable.ic_launcher));
         mData.add(item);
-
         item = new CarUiContentListItem(CarUiContentListItem.Action.NONE);
         item.setTitle(getString(R.string.title_with_content_icon));
         item.setPrimaryIconType(CarUiContentListItem.IconType.CONTENT);
         item.setIcon(getDrawable(R.drawable.ic_sample_logo));
         mData.add(item);
-
         item = new CarUiContentListItem(CarUiContentListItem.Action.NONE);
         item.setTitle(getString(R.string.test_title));
         item.setBody(getString(R.string.with_avatar_icon));
         item.setIcon(getDrawable(R.drawable.ic_sample_logo));
         item.setPrimaryIconType(CarUiContentListItem.IconType.AVATAR);
-
         item = new CarUiContentListItem(CarUiContentListItem.Action.NONE);
         item.setTitle(getString(R.string.test_title));
         item.setBody(getString(R.string.display_toast_on_click));
@@ -114,7 +104,6 @@ public class CarUiListItemActivity extends Activity implements InsetsChangedList
             Toast.makeText(context, "Item clicked", Toast.LENGTH_SHORT).show();
         });
         mData.add(item);
-
         item = new CarUiContentListItem(CarUiContentListItem.Action.CHECK_BOX);
         item.setIcon(getDrawable(R.drawable.ic_launcher));
         item.setTitle(getString(R.string.title_item_with_checkbox));
@@ -123,7 +112,6 @@ public class CarUiListItemActivity extends Activity implements InsetsChangedList
                 (listItem, isChecked) -> Toast.makeText(context,
                         "Item checked state is: " + isChecked, Toast.LENGTH_SHORT).show());
         mData.add(item);
-
         item = new CarUiContentListItem(CarUiContentListItem.Action.CHECK_BOX);
         item.setIcon(getDrawable(R.drawable.ic_launcher));
         item.setEnabled(false);
@@ -133,13 +121,23 @@ public class CarUiListItemActivity extends Activity implements InsetsChangedList
                 (listItem, isChecked) -> Toast.makeText(context,
                         "Item checked state is: " + isChecked, Toast.LENGTH_SHORT).show());
         mData.add(item);
-
-
+        item = new CarUiContentListItem(CarUiContentListItem.Action.SWITCH);
+        item.setIcon(getDrawable(R.drawable.ic_launcher));
+        item.setBody(getString(R.string.body_item_with_switch));
+        item.setOnItemClickedListener(item1 -> {
+            Toast.makeText(context, "Click on item with switch", Toast.LENGTH_SHORT).show();
+        });
+        mData.add(item);
+        item = new CarUiContentListItem(CarUiContentListItem.Action.CHECK_BOX);
+        item.setIcon(getDrawable(R.drawable.ic_launcher));
+        item.setTitle(getString(R.string.title_item_with_checkbox));
+        item.setBody(getString(R.string.item_initially_checked));
+        item.setChecked(true);
+        mData.add(item);
         CarUiContentListItem radioItem1 = new CarUiContentListItem(
                 CarUiContentListItem.Action.RADIO_BUTTON);
         CarUiContentListItem radioItem2 = new CarUiContentListItem(
                 CarUiContentListItem.Action.RADIO_BUTTON);
-
         radioItem1.setTitle(getString(R.string.title_item_with_radio_button));
         radioItem1.setBody(getString(R.string.item_initially_checked));
         radioItem1.setChecked(false);
@@ -150,7 +148,6 @@ public class CarUiListItemActivity extends Activity implements InsetsChangedList
             }
         });
         mData.add(radioItem1);
-
         radioItem2.setIcon(getDrawable(R.drawable.ic_launcher));
         radioItem2.setTitle(getString(R.string.item_mutually_exclusive_with_item_above));
         radioItem2.setChecked(true);
@@ -160,7 +157,24 @@ public class CarUiListItemActivity extends Activity implements InsetsChangedList
                 mAdapter.notifyItemChanged(mData.indexOf(radioItem1));
             }
         });
-        mData.add(radioItem2);
+
+        item = new CarUiContentListItem(CarUiContentListItem.Action.ICON);
+        item.setTitle(getString(R.string.supplemental_icon_with_listener));
+        item.setPrimaryIconType(CarUiContentListItem.IconType.CONTENT);
+        item.setIcon(getDrawable(R.drawable.ic_launcher));
+        item.setBody(getString(R.string.test_body));
+        item.setOnItemClickedListener(v -> Toast.makeText(context, "Clicked item",
+                Toast.LENGTH_SHORT).show());
+        item.setSupplementalIcon(getDrawable(R.drawable.ic_launcher),
+                v -> Toast.makeText(context, "Clicked supplemental icon",
+                        Toast.LENGTH_SHORT).show());
+        item.setChecked(true);
+        mData.add(item);
+
+        item = new CarUiContentListItem(CarUiContentListItem.Action.CHEVRON);
+        item.setTitle(getString(R.string.item_with_chevron));
+        item.setBody(getString(R.string.test_body));
+        mData.add(item);
         return mData;
     }
 

@@ -1,13 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="car_ui_primary_color">#60A8F0</color>
+    <color name="car_ui_secondary_color">#60A8F0</color>
+    <color name="car_ui_on_secondary_color">#B3F8F9FA</color>
     <color name="car_ui_on_primary_color">#202124</color>
     <color name="car_ui_divider_color">#1F000000</color>
     <color name="car_ui_text_color_primary">#F8F9FA</color>
     <color name="car_ui_activity_background_color">#000000</color>
+    <color name="car_ui_surface_color">@color/car_ui_activity_background_color</color>
+    <color name="car_ui_alert_dialog_bg_color">#282A2D</color>
     <color name="car_ui_toolbar_background">#E0000000</color>
     <color name="car_ui_scrollbar_thumb_color">#99ffffff</color>
-    <color name="car_ui_scrollbar_track_color">@color/car_ui_activity_background_color</color>
+    <color name="car_ui_scrollbar_track_color">@android:color/transparent</color>
     <color name="car_ui_scrollbar_arrow">#FFFFFF</color>
     <color name="car_ui_ripple_color">#27ffffff</color>
 </resources>

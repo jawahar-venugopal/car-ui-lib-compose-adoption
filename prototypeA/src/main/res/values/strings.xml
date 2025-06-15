@@ -285,6 +285,11 @@
   <string name="title_item_with_radio_button">Title — Item with radio button</string>
   <string name="item_mutually_exclusive_with_item_above">Item is mutually exclusive with item above</string>
   <string name="test_data">Test data</string>
+  <string name="body_item_with_switch">Body — Item with switch  — with click listener</string>
+  <string name="item_with_chevron">Item with chevron</string>
+  <string name="random_body_text_with_action_divider">Random body text — with action divider</string>
+  <string name="null_supplement_icon">Null supplemental icon</string>
+  <string name="supplemental_icon_with_listener">Supplemental icon with listener</string>
 
   <!-- Dialog -->
   <string name="standard_alert_dialog">Standard Alert Dialog</string>
