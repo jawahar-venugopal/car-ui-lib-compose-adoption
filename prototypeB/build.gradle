@@ -34,7 +34,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = '1.5.13' // Use version matching your Compose libraries
+        kotlinCompilerExtensionVersion = '1.5.13'
     }
 
     compileOptions {
@@ -53,7 +53,6 @@ android {
         }
     }
 
-    // This is the gradle equivalent of the libs: ["android.car"] in the Android.bp
     useLibrary 'android.car'
     kotlinOptions {
         jvmTarget = '1.8'

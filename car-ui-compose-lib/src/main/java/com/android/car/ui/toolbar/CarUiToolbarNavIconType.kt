@@ -18,4 +18,4 @@
  */
 package com.android.car.ui.toolbar
 
-enum class CarUiToolbarNavIconType { None, Back, Close }
+enum class CarUiToolbarNavIconType { Disabled, Back, Close, Down }

@@ -40,6 +40,8 @@ fun CarUiEditText(
     modifier: Modifier = Modifier,
     keyboardType: KeyboardType = KeyboardType.Text,
     onImeAction: (() -> Unit)? = null,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
     imeAction: ImeAction = ImeAction.Done,
 ) {
     val isEditable = enabled && !restricted
@@ -55,19 +57,27 @@ fun CarUiEditText(
             keyboardType = keyboardType,
             imeAction = imeAction
         ),
+        leadingIcon = leadingIcon,
+        trailingIcon = trailingIcon,
         keyboardActions = KeyboardActions(
             onSearch = { onImeAction?.invoke() },
             onDone = { onImeAction?.invoke() }
         ),
         colors = TextFieldDefaults.textFieldColors(
+            placeholderColor = MaterialTheme.colors.onSurface,
+            textColor = MaterialTheme.colors.onSurface,
             backgroundColor = colorResource(android.R.color.transparent),
-            disabledTextColor = MaterialTheme.colors.onSurface.copy(alpha = 0.38f),
+            disabledTextColor = MaterialTheme.colors.onSecondary,
             cursorColor = MaterialTheme.colors.primary,
             focusedIndicatorColor = MaterialTheme.colors.primary,
-            unfocusedIndicatorColor = MaterialTheme.colors.onSurface.copy(alpha = 0.38f),
-            disabledIndicatorColor = MaterialTheme.colors.onSurface.copy(alpha = 0.12f)
+            unfocusedIndicatorColor = MaterialTheme.colors.primary,
+            disabledIndicatorColor = MaterialTheme.colors.onSecondary,
+            leadingIconColor = MaterialTheme.colors.onSurface,
+            disabledLeadingIconColor = MaterialTheme.colors.onSurface.copy(alpha = 0.38f),
+            trailingIconColor = MaterialTheme.colors.onSurface,
+            disabledTrailingIconColor = MaterialTheme.colors.onSurface.copy(alpha = 0.38f),
         ),
-        readOnly = restricted // disables editing when restricted
+        readOnly = restricted
     )
 }
 

@@ -18,6 +18,7 @@
  */
 package com.android.car.ui.preference
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,52 +26,110 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.AlertDialog
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import com.android.car.ui.CarUiAlertDialog
+import com.android.car.ui.CarUiAlertDialogParams
 import com.android.car.ui.R
+import com.android.car.ui.utils.dataStore
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 @Composable
 fun CarUiEditTextPreference(
+    key: String,
     title: String,
+    dialogTitle: String = title,
     summary: String? = null,
     icon: Painter? = null,
-    value: String,
-    onValueChange: (String) -> Unit,
+    defaultValue: String = "",
     enabled: Boolean = true,
     restricted: Boolean = false,
     onRestrictedClick: (() -> Unit)? = null,
     onDisabledClick: (() -> Unit)? = null,
-    showChevron: Boolean = true,
+    showChevron: Boolean = false,
+    modifier: Modifier = Modifier,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    useSimpleSummaryProvider: Boolean = false,
+) {
+    val context = LocalContext.current
+    val dataStore = context.dataStore
+    val prefKey = stringPreferencesKey(key)
+    var value by remember { mutableStateOf(defaultValue) }
+    var loaded by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(key) {
+        val prefs = dataStore.data.first()
+        value = prefs[prefKey] ?: defaultValue
+        loaded = true
+    }
+
+    if (loaded) {
+        CarUiEditTextPreferenceCore(
+            title = title,
+            dialogTitle = dialogTitle,
+            summary = summary,
+            icon = icon,
+            value = value,
+            onValueChange = { newValue ->
+                value = newValue
+                scope.launch { dataStore.edit { it[prefKey] = newValue } }
+            },
+            useSimpleSummaryProvider = useSimpleSummaryProvider,
+            enabled = enabled,
+            restricted = restricted,
+            onRestrictedClick = onRestrictedClick,
+            onDisabledClick = onDisabledClick,
+            showChevron = showChevron,
+            modifier = modifier,
+            keyboardType = keyboardType
+        )
+    }
+}
+
+@Composable
+private fun CarUiEditTextPreferenceCore(
+    title: String,
+    summary: String? = null,
+    dialogTitle: String = title,
+    icon: Painter? = null,
+    value: String,
+    onValueChange: (String) -> Unit,
+    useSimpleSummaryProvider: Boolean = false,
+    enabled: Boolean = true,
+    restricted: Boolean = false,
+    onRestrictedClick: (() -> Unit)? = null,
+    onDisabledClick: (() -> Unit)? = null,
+    showChevron: Boolean = false,
     modifier: Modifier = Modifier,
     keyboardType: KeyboardType = KeyboardType.Text,
 ) {
     var dialogOpen by remember { mutableStateOf(false) }
     var tempValue by remember { mutableStateOf(value) }
-
-    val isEnabled = enabled && !restricted
-    val contentColor =
-        if (isEnabled) MaterialTheme.colors.onBackground else MaterialTheme.colors.onSurface.copy(
-            alpha = 0.38f
-        )
+    val isEnabled = enabled && !restricted && LocalPreferenceCategoryEnabled.current
     val background = MaterialTheme.colors.background
     val padding = dimensionResource(id = R.dimen.car_ui_pref_padding)
     val minHeight = dimensionResource(id = R.dimen.car_ui_pref_min_height)
@@ -82,7 +141,6 @@ fun CarUiEditTextPreference(
         color = background,
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = padding)
             .alpha(if (restricted) ContentAlpha.disabled else 1f)
             .heightIn(min = minHeight),
         shape = shape,
@@ -98,65 +156,66 @@ fun CarUiEditTextPreference(
                         else -> it
                     }
                 }
-                .padding(all = padding),
+                .padding(vertical = padding),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (icon != null) {
-                Icon(
+                Image(
                     painter = icon,
                     contentDescription = null,
-                    tint = contentColor,
                     modifier = Modifier
                         .size(iconSize)
-                        .padding(end = iconSpacing)
+                        .align(alignment = Alignment.CenterVertically),
+                    contentScale = ContentScale.Fit
                 )
             }
-            Column(Modifier.weight(1f)) {
+            Column(Modifier
+                .weight(1f)
+                .padding(start = if (icon != null) iconSpacing else 0.dp)) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.h6,
-                    color = contentColor
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.onSurface
                 )
-                Text(
-                    text = summary ?: value,
-                    style = MaterialTheme.typography.body2,
-                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
-                )
+                val shownSummary = when {
+                    useSimpleSummaryProvider -> if (value.isBlank()) "Not set" else value
+                    !summary.isNullOrBlank() -> summary
+                    else -> ""
+                }
+                if (shownSummary.isNotBlank()) {
+                    Text(
+                        text = shownSummary,
+                        style = MaterialTheme.typography.subtitle1,
+                        color = MaterialTheme.colors.onSecondary
+                    )
+                }
             }
             if (showChevron) {
                 Icon(
                     painter = painterResource(id = R.drawable.car_ui_icon_chevron),
                     contentDescription = "Chevron",
-                    tint = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
+                    tint = MaterialTheme.colors.onSurface,
                     modifier = Modifier.size(iconSize)
                 )
             }
         }
     }
 
-    if (dialogOpen) {
-        AlertDialog(
-            onDismissRequest = { dialogOpen = false },
-            title = { Text(title) },
-            text = {
-                Column {
-                    OutlinedTextField(
-                        value = tempValue,
-                        onValueChange = { tempValue = it },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = keyboardType)
-                    )
-                }
+    CarUiAlertDialog(
+        CarUiAlertDialogParams(
+            show = dialogOpen,
+            title = dialogTitle,
+            editTextValue = tempValue,
+            editTextOnValueChange = { tempValue = it },
+            positiveButton = "Ok",
+            onPositiveClick = {
+                onValueChange(tempValue)
+                dialogOpen = false
             },
-            confirmButton = {
-                TextButton(onClick = {
-                    onValueChange(tempValue)
-                    dialogOpen = false
-                }) { Text("OK") }
-            },
-            dismissButton = {
-                TextButton(onClick = { dialogOpen = false }) { Text("Cancel") }
-            }
+            negativeButton = "Cancel",
+            onNegativeClick = { dialogOpen = false },
+            editTextKeyboardType = keyboardType,
+            onDismiss = { dialogOpen = false }
         )
-    }
+    )
 }

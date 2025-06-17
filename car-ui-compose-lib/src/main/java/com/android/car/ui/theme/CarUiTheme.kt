@@ -85,7 +85,6 @@ fun buildCarUiTypography(): Typography {
             fontFamily = FontFamily.Default,
             fontSize = dimensionResource(id = R.dimen.car_ui_button_text_size).value.sp,
         )
-        // Add more styles as needed!
     )
 }
 

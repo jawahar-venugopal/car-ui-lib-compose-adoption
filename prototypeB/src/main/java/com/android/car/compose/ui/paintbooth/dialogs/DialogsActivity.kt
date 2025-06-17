@@ -227,7 +227,6 @@ fun DialogDemo(
             CarUiAlertDialogParams(
                 show = true,
                 title = stringResource(R.string.custom_dialog_box),
-                // Compose doesn't have built-in "setMultiChoiceItems" so you can use the content slot for a checkbox, e.g.:
                 content = {
                     var checked by remember { mutableStateOf(false) }
                     Row(

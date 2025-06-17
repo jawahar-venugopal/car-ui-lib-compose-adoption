@@ -28,8 +28,6 @@ public class PreferenceActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Display the fragment as the main content.
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()

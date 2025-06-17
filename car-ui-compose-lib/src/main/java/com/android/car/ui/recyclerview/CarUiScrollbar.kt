@@ -86,7 +86,6 @@ fun CarUiScrollbar(
     val thumbWidth = dimensionResource(id = R.dimen.car_ui_scrollbar_thumb_width)
     val coroutineScope = rememberCoroutineScope()
 
-    // Get scroll info
     val (firstVisibleItemIndex, visibleItemsCount, totalItemsCount) = when {
         listState != null -> {
             Triple(
@@ -136,7 +135,6 @@ fun CarUiScrollbar(
             .fillMaxHeight()
             .width(scrollbarWidth)
     ) {
-        // Page Up button
         Box(
             modifier = Modifier
                 .align(Alignment.TopCenter)
@@ -168,7 +166,6 @@ fun CarUiScrollbar(
             }
         }
 
-        // Track & thumb
         Box(
             modifier = Modifier
                 .fillMaxHeight()
@@ -179,7 +176,6 @@ fun CarUiScrollbar(
                     scrollbarHeightPx.value = it.size.height
                 }
         ) {
-            // Thumb
             Box(
                 modifier = Modifier
                     .offset { IntOffset(0, thumbOffsetPx) }
@@ -191,7 +187,6 @@ fun CarUiScrollbar(
             )
         }
 
-        // Page Down button
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)

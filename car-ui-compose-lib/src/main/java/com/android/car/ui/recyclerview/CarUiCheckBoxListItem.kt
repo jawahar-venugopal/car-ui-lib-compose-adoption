@@ -18,18 +18,13 @@
  */
 package com.android.car.ui.recyclerview
 
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.Checkbox
-import androidx.compose.material.CheckboxColors
 import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.unit.dp
-import com.android.car.ui.R
 
 @Composable
 fun CarUiCheckBoxListItem(

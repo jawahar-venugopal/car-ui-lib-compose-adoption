@@ -23,7 +23,7 @@
     <eat-comment />
 
     <!-- Preferences page title [CHAR_LIMIT=13] -->
-    <string name="preferences_screen_title">Settings</string>
+    <string name="preferences_screen_title">Settings  - Prototype B</string>
 
     <!--This section is for basic attributes -->
     <eat-comment />
@@ -35,7 +35,6 @@
     <string name="summary_basic_preference">Simple preference with no special attributes</string>
 
     <!-- Title of a preference with stylized text [CHAR_LIMIT=71]-->
-    <string name="title_stylish_preference"><b>Very</b> <i>stylish</i> <u>preference</u></string>
     <!-- Summary of a preference with stylized text [CHAR_LIMIT=150]-->
     <string name="summary_stylish_preference">Define style tags such as &lt;b&gt; in a string resource to customize a preference\'s text</string>
 
@@ -305,6 +304,5 @@
     <string name="select_one_option_at_a_time">Ony one option may be selected at a time</string>
     <string name="long_title">This is a very long title. It should likely span across multiple lines or something. It shouldn\'t get cut off.</string>
     <string name="long_subtitle">This is a very long subtitle. It should likely span across  multiple lines or something. It shouldn\'t get cut off.</string>
-    <string name="car_ui_restricted_while_driving">Feature not available while driving</string>
 
 </resources>

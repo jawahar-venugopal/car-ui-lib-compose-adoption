@@ -19,66 +19,79 @@
 package com.android.car.ui.toolbar
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.IconToggleButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Switch
 import androidx.compose.material.Text
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun CarUiToolbarMenuItemView(
     menuItem: CarUiToolbarMenuItem,
     iconSize: Dp,
     iconBgSize: Dp,
-    onCheckedChange: ((Boolean) -> Unit)? = null,
-    onActivatedChange: ((Boolean) -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     if (!menuItem.visible) return
 
     val isEnabled = menuItem.enabled && !menuItem.restricted
 
-    // Tint logic
+    val (checkedState, setCheckedState) = remember {
+        mutableStateOf(menuItem.checked)
+    }
+    val (activatedState, setActivatedState) = remember {
+        mutableStateOf(menuItem.activated)
+    }
+
+    LaunchedEffect(menuItem.checked) {
+        setCheckedState(menuItem.checked)
+    }
+    LaunchedEffect(menuItem.activated) {
+        setActivatedState(menuItem.activated)
+    }
+
     val contentColor = when {
-        !isEnabled -> MaterialTheme.colors.onSurface.copy(alpha = 0.38f)
-        menuItem.primary -> MaterialTheme.colors.primary
-        else -> MaterialTheme.colors.onPrimary
+        !isEnabled -> MaterialTheme.colors.onSecondary
+        else -> MaterialTheme.colors.onSurface
     }
     val iconTint = if (menuItem.tinted) contentColor else Color.Unspecified
 
-    // Circular background if activated/checked
-    val backgroundColor = when {
-        menuItem.activated || (menuItem.checkable && menuItem.checked) ->
-            MaterialTheme.colors.primary.copy(alpha = 0.12f)
-
-        else -> Color.Transparent
-    }
-
     @Composable
-    fun Content() {
-        Box(
-            modifier = Modifier
-                .size(iconBgSize)
-                .background(backgroundColor, CircleShape),
-            contentAlignment = Alignment.Center
+    fun IconAndTitleRow() {
+        Row(
+            modifier = Modifier,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            if (menuItem.icon != null && (menuItem.showIconAndTitle || menuItem.title.isNullOrEmpty())) {
+            if (menuItem.iconRes != null && (menuItem.showIconAndTitle || menuItem.title.isNullOrEmpty())) {
                 Icon(
-                    painter = menuItem.icon,
+                    painter = painterResource(menuItem.iconRes),
                     contentDescription = menuItem.title,
                     tint = iconTint,
                     modifier = Modifier.size(iconSize)
                 )
             }
-            if (!menuItem.title.isNullOrEmpty() && (menuItem.showIconAndTitle || menuItem.icon == null)) {
+            if (!menuItem.title.isNullOrEmpty() && (menuItem.showIconAndTitle || menuItem.iconRes == null)) {
                 Text(
                     text = menuItem.title,
                     color = contentColor
@@ -89,33 +102,43 @@ fun CarUiToolbarMenuItemView(
 
     when {
         menuItem.checkable -> {
-            IconToggleButton(
-                checked = menuItem.checked,
-                onCheckedChange = {
-                    if (isEnabled) {
-                        onCheckedChange?.invoke(it)
-                        menuItem.onClick?.invoke()
-                    }
-                },
-                enabled = isEnabled,
-                modifier = modifier.size(iconBgSize)
+            Row(
+                modifier = modifier
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Content()
+                if (menuItem.showIconAndTitle || menuItem.iconRes != null || menuItem.title != null) {
+                    IconAndTitleRow()
+                    Spacer(Modifier.width(8.dp))
+                }
+                Switch(
+                    checked = checkedState,
+                    onCheckedChange = {
+                        if (isEnabled) {
+                            setCheckedState(it)
+                            menuItem.onCheckedChange?.invoke(it)
+                        }
+                    },
+                    enabled = isEnabled
+                )
             }
         }
 
         menuItem.activatable -> {
-            IconButton(
-                onClick = {
-                    if (isEnabled) {
-                        onActivatedChange?.invoke(!menuItem.activated)
-                        menuItem.onClick?.invoke()
-                    }
-                },
-                enabled = isEnabled,
-                modifier = modifier.size(iconBgSize)
-            ) {
-                Content()
+            menuItem.iconRes?.let {
+                CarUiActivatableMenuItem(
+                    it,
+                    title = menuItem.title,
+                    activated = activatedState,
+                    onActivatedChange = {
+                        if (isEnabled) {
+                            setActivatedState(it)
+                            menuItem.onActivatedChange?.invoke(it)
+                        }
+                    },
+                    iconSize = iconSize,
+                    iconBgSize = iconBgSize
+                )
             }
         }
 
@@ -123,10 +146,45 @@ fun CarUiToolbarMenuItemView(
             IconButton(
                 onClick = { if (isEnabled) menuItem.onClick?.invoke() },
                 enabled = isEnabled,
-                modifier = modifier.size(iconBgSize)
             ) {
-                Content()
+                IconAndTitleRow()
             }
         }
+    }
+}
+
+@Composable
+fun CarUiActivatableMenuItem(
+    iconRes: Int,
+    title: String? = null,
+    activated: Boolean,
+    onActivatedChange: (Boolean) -> Unit,
+    iconSize: Dp,
+    iconBgSize: Dp,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
+) {
+    val bgColor = if (activated) Color.White else Color.Transparent
+    val iconTint = if (activated) Color.Black else MaterialTheme.colors.onSurface
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .size(iconBgSize)
+            .clip(CircleShape)
+            .background(bgColor)
+            .clickable(
+                enabled = enabled,
+                indication = rememberRipple(bounded = false, radius = iconBgSize / 2),
+                interactionSource = remember { MutableInteractionSource() },
+                onClick = { onActivatedChange(!activated) }
+            )
+    ) {
+        Icon(
+            painter = painterResource(iconRes),
+            contentDescription = title,
+            tint = iconTint,
+            modifier = Modifier.size(iconSize)
+        )
     }
 }

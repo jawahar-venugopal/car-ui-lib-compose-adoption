@@ -45,6 +45,8 @@ import com.android.car.compose.ui.paintbooth.caruirecyclerview.CarUiListItemActi
 import com.android.car.compose.ui.paintbooth.caruirecyclerview.CarUiRecyclerViewActivity
 import com.android.car.compose.ui.paintbooth.caruirecyclerview.GridCarUiRecyclerViewActivity
 import com.android.car.compose.ui.paintbooth.dialogs.DialogsActivity
+import com.android.car.compose.ui.paintbooth.preferences.PreferenceActivity
+import com.android.car.compose.ui.paintbooth.toolbar.ToolbarActivity
 import com.android.car.ui.recyclerview.CarUiRecyclerView
 import com.android.car.ui.theme.CarUiTheme
 import com.android.car.ui.toolbar.CarUiToolbar
@@ -55,12 +57,12 @@ data class ActivityEntry(val label: String, val activityClass: Class<out Activit
 class MainActivity : ComponentActivity() {
 
     private val activities = listOf(
-        ActivityEntry("Dialogs sample", DialogsActivity::class.java),
         ActivityEntry("List sample", CarUiRecyclerViewActivity::class.java),
         ActivityEntry("Grid sample", GridCarUiRecyclerViewActivity::class.java),
-        ActivityEntry("Preferences sample", MainActivity::class.java),
-        ActivityEntry("Toolbar sample", MainActivity::class.java),
-        ActivityEntry("ListItem sample", CarUiListItemActivity::class.java)
+        ActivityEntry("ListItem sample", CarUiListItemActivity::class.java),
+        ActivityEntry("Preferences sample", PreferenceActivity::class.java),
+        ActivityEntry("Toolbar sample", ToolbarActivity::class.java),
+        ActivityEntry("Dialogs sample", DialogsActivity::class.java),
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,13 +84,11 @@ class MainActivity : ComponentActivity() {
 fun MainScreen(activities: List<ActivityEntry>) {
     val context = LocalContext.current
     Column(modifier = Modifier.fillMaxSize()) {
-        // Top toolbar
         CarUiToolbar(
             title = stringResource(R.string.app_name),
-            navIconType = CarUiToolbarNavIconType.None,
+            navIconType = CarUiToolbarNavIconType.Disabled,
             logo = painterResource(id = R.drawable.ic_launcher)
         )
-        // Main activity list
         CarUiRecyclerView(
             items = activities,
             itemContent = { entry ->
@@ -112,7 +112,7 @@ fun ActivityButton(entry: ActivityEntry, context: Context) {
                 try {
                     val intent = Intent(context, entry.activityClass)
                     context.startActivity(intent)
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     Toast.makeText(
                         context,
                         "Activity not found: ${entry.label}",

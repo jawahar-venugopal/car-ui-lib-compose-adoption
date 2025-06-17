@@ -18,38 +18,103 @@
  */
 package com.android.car.ui.preference
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.AlertDialog
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.RadioButton
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import com.android.car.ui.CarUiAlertDialog
+import com.android.car.ui.CarUiAlertDialogParams
 import com.android.car.ui.R
+import com.android.car.ui.utils.dataStore
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 @Composable
 fun CarUiListPreference(
+    key: String,
     title: String,
+    dialogTitle: String = title,
+    summary: String? = null,
+    icon: Painter? = null,
+    entries: List<String>,
+    entryValues: List<String>,
+    defaultValue: String = "",
+    enabled: Boolean = true,
+    restricted: Boolean = false,
+    onRestrictedClick: (() -> Unit)? = null,
+    onDisabledClick: (() -> Unit)? = null,
+    showChevron: Boolean = false,
+    useSimpleSummaryProvider: Boolean = false,
+    modifier: Modifier = Modifier,
+) {
+    require(entries.size == entryValues.size) { "entries and entryValues must be the same size." }
+    val context = LocalContext.current
+    val dataStore = context.dataStore
+    val prefKey = stringPreferencesKey(key)
+    var selectedIndex by remember { mutableStateOf(-1) }
+    var loaded by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(key) {
+        val prefs = dataStore.data.first()
+        val value = prefs[prefKey] ?: defaultValue
+        selectedIndex = entryValues.indexOf(value).takeIf { it >= 0 } ?: -1
+        loaded = true
+    }
+
+    if (loaded) {
+        CarUiListPreferenceCore(
+            title = title,
+            dialogTitle = dialogTitle,
+            summary = summary,
+            icon = icon,
+            entries = entries,
+            selectedIndex = selectedIndex,
+            onEntrySelected = { i ->
+                selectedIndex = i
+                scope.launch { dataStore.edit { it[prefKey] = entryValues[i] } }
+            },
+            enabled = enabled,
+            restricted = restricted,
+            onRestrictedClick = onRestrictedClick,
+            onDisabledClick = onDisabledClick,
+            showChevron = showChevron,
+            useSimpleSummaryProvider = useSimpleSummaryProvider,
+            modifier = modifier,
+        )
+    }
+}
+
+@Composable
+fun CarUiListPreferenceCore(
+    title: String,
+    dialogTitle: String = title,
     summary: String? = null,
     icon: Painter? = null,
     entries: List<String>,
@@ -59,27 +124,23 @@ fun CarUiListPreference(
     restricted: Boolean = false,
     onRestrictedClick: (() -> Unit)? = null,
     onDisabledClick: (() -> Unit)? = null,
-    showChevron: Boolean = true,
+    showChevron: Boolean = false,
+    useSimpleSummaryProvider: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     var dialogOpen by remember { mutableStateOf(false) }
-    val isEnabled = enabled && !restricted
-    val contentColor =
-        if (isEnabled) MaterialTheme.colors.onBackground else MaterialTheme.colors.onSurface.copy(
-            alpha = 0.38f
-        )
+    val isEnabled = enabled && !restricted && LocalPreferenceCategoryEnabled.current
     val background = MaterialTheme.colors.background
     val padding = dimensionResource(id = R.dimen.car_ui_pref_padding)
     val minHeight = dimensionResource(id = R.dimen.car_ui_pref_min_height)
     val iconSize = dimensionResource(id = R.dimen.car_ui_pref_icon_size)
-    val iconSpacing = dimensionResource(id = R.dimen.car_ui_pref_icon_spacing)
+    dimensionResource(id = R.dimen.car_ui_pref_icon_spacing)
     val shape = MaterialTheme.shapes.medium
 
     Surface(
         color = background,
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = padding)
             .alpha(if (restricted) ContentAlpha.disabled else 1f)
             .heightIn(min = minHeight),
         shape = shape,
@@ -95,86 +156,58 @@ fun CarUiListPreference(
                         else -> it
                     }
                 }
-                .padding(all = padding),
+                .padding(vertical = padding),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (icon != null) {
-                Icon(
+                Image(
                     painter = icon,
                     contentDescription = null,
-                    tint = contentColor,
                     modifier = Modifier
                         .size(iconSize)
-                        .padding(end = iconSpacing)
+                        .align(alignment = Alignment.CenterVertically),
+                    contentScale = ContentScale.Fit
                 )
             }
             Column(Modifier.weight(1f)) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.h6,
-                    color = contentColor
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.onSurface
                 )
-                if (!summary.isNullOrBlank()) {
-                    Text(
-                        text = summary,
-                        style = MaterialTheme.typography.body2,
-                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
-                    )
-                } else {
-                    // Dynamic summary: selected entry
-                    Text(
-                        text = entries.getOrNull(selectedIndex) ?: "",
-                        style = MaterialTheme.typography.body2,
-                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
-                    )
+                val shownSummary = when {
+                    useSimpleSummaryProvider -> {
+                        if (selectedIndex < 0 || selectedIndex >= entries.size) "Not set"
+                        else entries[selectedIndex]
+                    }
+
+                    !summary.isNullOrBlank() -> summary
+                    else -> ""
                 }
+                Text(
+                    text = shownSummary,
+                    style = MaterialTheme.typography.subtitle1,
+                    color = MaterialTheme.colors.onSecondary
+                )
             }
             if (showChevron) {
                 Icon(
                     painter = painterResource(id = R.drawable.car_ui_icon_chevron),
                     contentDescription = "Chevron",
-                    tint = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
+                    tint = MaterialTheme.colors.onSurface,
                     modifier = Modifier.size(iconSize)
                 )
             }
         }
     }
-
-    // Dialog for selection
-    if (dialogOpen) {
-        val dialogItemVerticalPadding =
-            dimensionResource(id = R.dimen.car_ui_dialog_list_item_vertical_padding)
-        val dialogItemHorizontalPadding =
-            dimensionResource(id = R.dimen.car_ui_dialog_list_item_horizontal_padding)
-        val dialogItemIconMarginEnd =
-            dimensionResource(id = R.dimen.car_ui_dialog_list_item_icon_margin_end)
-        AlertDialog(
-            onDismissRequest = { dialogOpen = false },
-            title = { Text(title) },
-            text = {
-                Column {
-                    entries.forEachIndexed { i, entry ->
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    dialogOpen = false
-                                    if (i != selectedIndex) onEntrySelected(i)
-                                }
-                                .padding(
-                                    vertical = dialogItemVerticalPadding,
-                                    horizontal = dialogItemHorizontalPadding
-                                )
-                        ) {
-                            RadioButton(selected = i == selectedIndex, onClick = null)
-                            Spacer(Modifier.width(dialogItemIconMarginEnd))
-                            Text(entry)
-                        }
-                    }
-                }
-            },
-            confirmButton = {},
-            dismissButton = {}
+    CarUiAlertDialog(
+        CarUiAlertDialogParams(
+            show = dialogOpen,
+            title = dialogTitle,
+            singleChoiceItems = entries,
+            singleChoiceSelectedIndex = selectedIndex,
+            onSingleChoiceSelect = onEntrySelected,
+            onDismiss = { dialogOpen = false }
         )
-    }
+    )
 }

@@ -1,4 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-<drawable name="car_ui_activity_background">@color/car_ui_activity_background_color</drawable>
-</resources>
+<resources></resources>

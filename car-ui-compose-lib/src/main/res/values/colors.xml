@@ -13,5 +13,4 @@
     <color name="car_ui_scrollbar_thumb_color">#99ffffff</color>
     <color name="car_ui_scrollbar_track_color">@android:color/transparent</color>
     <color name="car_ui_scrollbar_arrow">#FFFFFF</color>
-    <color name="car_ui_ripple_color">#27ffffff</color>
 </resources>

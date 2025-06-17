@@ -18,6 +18,7 @@
  */
 package com.android.car.ui.preference
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,24 +30,41 @@ import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.RadioButton
+import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.android.car.ui.R
+import com.android.car.ui.utils.dataStore
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 @Composable
 fun CarUiRadioButtonPreference(
+    groupKey: String,
+    value: String,
     title: String,
     summary: String? = null,
     icon: Painter? = null,
-    selected: Boolean,
-    onSelected: (() -> Unit)? = null,
+    defaultSelected: Boolean = false,
     enabled: Boolean = true,
     restricted: Boolean = false,
     onRestrictedClick: (() -> Unit)? = null,
@@ -54,13 +72,32 @@ fun CarUiRadioButtonPreference(
     onDisabledClick: (() -> Unit)? = null,
     showChevron: Boolean = false,
     modifier: Modifier = Modifier,
+    selected: Boolean? = null,
+    onSelected: (() -> Unit)? = null,
 ) {
-    val isEnabled = enabled && !restricted
+    val context = LocalContext.current
+    val dataStore = context.dataStore
+    val prefKey = stringPreferencesKey(groupKey)
+    var internalSelected by remember { mutableStateOf(defaultSelected) }
+    var loaded by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    val isAuto = selected == null || onSelected == null
+
+    LaunchedEffect(groupKey) {
+        if (isAuto) {
+            val prefs = dataStore.data.first()
+            internalSelected = (prefs[prefKey] ?: "").equals(value)
+            loaded = true
+        } else {
+            loaded = true
+        }
+    }
+    if (!loaded) return
+
+    val isChecked = selected ?: internalSelected
+    val isEnabled = enabled && !restricted && LocalPreferenceCategoryEnabled.current
     val clickable = (enabled || clickableWhileDisabled) && !restricted
-    val contentColor =
-        if (isEnabled) MaterialTheme.colors.onBackground else MaterialTheme.colors.onSurface.copy(
-            alpha = 0.38f
-        )
     val background = MaterialTheme.colors.background
     val padding = dimensionResource(id = R.dimen.car_ui_pref_padding)
     val minHeight = dimensionResource(id = R.dimen.car_ui_pref_min_height)
@@ -72,7 +109,6 @@ fun CarUiRadioButtonPreference(
         color = background,
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = padding)
             .alpha(if (restricted) ContentAlpha.disabled else 1f)
             .heightIn(min = minHeight),
         shape = shape,
@@ -82,7 +118,14 @@ fun CarUiRadioButtonPreference(
                 .fillMaxWidth()
                 .let {
                     when {
-                        isEnabled && onSelected != null -> it.clickable { onSelected() }
+                        isEnabled && (onSelected != null || isAuto) -> it.clickable {
+                            if (isAuto) {
+                                internalSelected = true
+                                scope.launch { dataStore.edit { it[prefKey] = value } }
+                            }
+                            onSelected?.invoke()
+                        }
+
                         restricted && onRestrictedClick != null -> it.clickable { onRestrictedClick() }
                         !isEnabled && onDisabledClick != null -> it.clickable { onDisabledClick() }
                         else -> it
@@ -92,26 +135,30 @@ fun CarUiRadioButtonPreference(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (icon != null) {
-                Icon(
+                Image(
                     painter = icon,
                     contentDescription = null,
-                    tint = contentColor,
                     modifier = Modifier
                         .size(iconSize)
-                        .padding(end = iconSpacing)
+                        .align(alignment = Alignment.CenterVertically),
+                    contentScale = ContentScale.Fit
                 )
             }
-            Column(Modifier.weight(1f)) {
+            Column(
+                Modifier
+                    .weight(1f)
+                    .padding(start = if (icon != null) iconSpacing else 0.dp)
+            ) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.h6,
-                    color = contentColor
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.onSurface
                 )
                 if (!summary.isNullOrBlank()) {
                     Text(
                         text = summary,
-                        style = MaterialTheme.typography.body2,
-                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
+                        style = MaterialTheme.typography.subtitle1,
+                        color = MaterialTheme.colors.onSecondary
                     )
                 }
             }
@@ -124,9 +171,19 @@ fun CarUiRadioButtonPreference(
                 )
             }
             RadioButton(
-                selected = selected,
-                onClick = if (isEnabled && onSelected != null) onSelected else null,
-                enabled = clickable
+                selected = isChecked,
+                onClick = if (isEnabled && (onSelected != null || isAuto)) {
+                    {
+                        if (isAuto) {
+                            internalSelected = true
+                            scope.launch { dataStore.edit { it[prefKey] = value } }
+                        }
+                        onSelected?.invoke()
+                    }
+                } else null,
+                enabled = clickable,
+                modifier = Modifier.scale(2.0f),
+                colors = RadioButtonDefaults.colors(unselectedColor = MaterialTheme.colors.onSurface)
             )
         }
     }

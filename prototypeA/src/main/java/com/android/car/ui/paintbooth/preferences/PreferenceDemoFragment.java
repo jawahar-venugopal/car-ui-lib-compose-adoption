@@ -20,20 +20,13 @@ import android.car.drivingstate.CarUxRestrictions;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceGroup;
 
 import com.android.car.ui.paintbooth.R;
-import com.android.car.ui.preference.CarUiTwoActionBasePreference;
-import com.android.car.ui.preference.CarUiTwoActionIconPreference;
-import com.android.car.ui.preference.CarUiTwoActionSwitchPreference;
-import com.android.car.ui.preference.CarUiTwoActionTextPreference;
 import com.android.car.ui.preference.PreferenceFragment;
 import com.android.car.ui.preference.UxRestrictablePreference;
 import com.android.car.ui.utils.CarUxRestrictionsUtil;
-
-import java.util.Objects;
 
 /**
  * Fragment to load preferences
@@ -72,7 +65,6 @@ public class PreferenceDemoFragment extends PreferenceFragment {
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        // Load the preferences from an XML resource
         setPreferencesFromResource(R.xml.preference_samples, rootKey);
     }
 

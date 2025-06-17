@@ -16,10 +16,7 @@
 package com.android.car.ui.paintbooth.toolbar;
 
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.InputType;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +28,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.car.ui.AlertDialogBuilder;
 import com.android.car.ui.FocusArea;
 import com.android.car.ui.baselayout.Insets;
 import com.android.car.ui.baselayout.InsetsChangedListener;
@@ -47,10 +43,31 @@ import com.android.car.ui.toolbar.ToolbarController;
 import java.util.ArrayList;
 import java.util.List;
 
-public class  ToolbarActivity extends AppCompatActivity implements InsetsChangedListener {
+public class ToolbarActivity extends AppCompatActivity implements InsetsChangedListener {
 
     private final List<MenuItem> mMenuItems = new ArrayList<>();
     private final List<Pair<CharSequence, View.OnClickListener>> mButtons = new ArrayList<>();
+    private final RecyclerView.Adapter<ViewHolder> mAdapter =
+            new RecyclerView.Adapter<ViewHolder>() {
+                @Override
+                public int getItemCount() {
+                    return mButtons.size();
+                }
+
+                @Override
+                public ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
+                    View item =
+                            LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item,
+                                    parent, false);
+                    return new ViewHolder(item);
+                }
+
+                @Override
+                public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+                    Pair<CharSequence, View.OnClickListener> pair = mButtons.get(position);
+                    holder.bind(pair.first, pair.second);
+                }
+            };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +78,7 @@ public class  ToolbarActivity extends AppCompatActivity implements InsetsChanged
         toolbar.setTitle(getTitle());
         toolbar.setNavButtonMode(NavButtonMode.BACK);
         toolbar.setLogo(R.drawable.ic_launcher);
-        boolean[] isSearching = new boolean[] { false };
+        boolean[] isSearching = new boolean[]{false};
         toolbar.registerBackListener(
                 () -> {
                     if (toolbar.getState() == Toolbar.State.SEARCH
@@ -129,10 +146,6 @@ public class  ToolbarActivity extends AppCompatActivity implements InsetsChanged
             }
         }));
 
-        mButtons.add(Pair.create(getString(R.string.toolbar_toggle_background),
-                v -> toolbar.setBackgroundShown(!toolbar.getBackgroundShown())));
-
-
         Mutable<Boolean> showingLauncherIcon = new Mutable<>(false);
         mButtons.add(Pair.create(getString(R.string.toolbar_toggle_search_icon), v -> {
             if (showingLauncherIcon.value) {
@@ -159,8 +172,8 @@ public class  ToolbarActivity extends AppCompatActivity implements InsetsChanged
                     .setOnClickListener(
                             i ->
                                     Toast.makeText(this,
-                                            "Checked? " + i.isChecked(),
-                                            Toast.LENGTH_SHORT)
+                                                    "Checked? " + i.isChecked(),
+                                                    Toast.LENGTH_SHORT)
                                             .show())
                     .build());
             toolbar.setMenuItems(mMenuItems);
@@ -199,15 +212,6 @@ public class  ToolbarActivity extends AppCompatActivity implements InsetsChanged
             toolbar.setMenuItems(mMenuItems);
         }));
 
-        mButtons.add(Pair.create(getString(R.string.toolbar_toggle_visibility),
-                v -> getMenuItem(item -> item.setVisible(!item.isVisible()))));
-
-        mButtons.add(Pair.create(getString(R.string.toolbar_toggle_enable),
-                v -> getMenuItem(item -> item.setEnabled(!item.isEnabled()))));
-
-        mButtons.add(Pair.create(getString(R.string.toolbar_toggle_perform_click),
-                v -> getMenuItem(MenuItem::performClick)));
-
         CarUiRecyclerView prv = requireViewById(R.id.list);
         prv.setAdapter(mAdapter);
     }
@@ -221,29 +225,6 @@ public class  ToolbarActivity extends AppCompatActivity implements InsetsChanged
                 .setPadding(0, insets.getTop(), 0, insets.getBottom());
         requireViewById(android.R.id.content)
                 .setPadding(insets.getLeft(), 0, insets.getRight(), 0);
-    }
-
-    private void getMenuItem(MenuItem.OnClickListener listener) {
-        if (mMenuItems.size() == 1) {
-            listener.onClick(mMenuItems.get(0));
-            return;
-        }
-
-        SimpleTextWatcher textWatcher = new SimpleTextWatcher();
-        new AlertDialogBuilder(this)
-                .setEditBox("", textWatcher, null, InputType.TYPE_CLASS_NUMBER)
-                .setTitle("Enter the index of the MenuItem")
-                .setPositiveButton(getString(R.string.ok), (dialog, which) -> {
-                    try {
-                        MenuItem item = mMenuItems.get(
-                                Integer.parseInt(textWatcher.getText()));
-                        listener.onClick(item);
-                    } catch (NumberFormatException | IndexOutOfBoundsException e) {
-                        Toast.makeText(this, "Invalid index \"" + textWatcher.getText()
-                                        + "\", valid range is 0 to " + (mMenuItems.size() - 1),
-                                Toast.LENGTH_LONG).show();
-                    }
-                }).show();
     }
 
     private static class ViewHolder extends RecyclerView.ViewHolder {
@@ -261,28 +242,6 @@ public class  ToolbarActivity extends AppCompatActivity implements InsetsChanged
         }
     }
 
-    private final RecyclerView.Adapter<ViewHolder> mAdapter =
-            new RecyclerView.Adapter<ViewHolder>() {
-                @Override
-                public int getItemCount() {
-                    return mButtons.size();
-                }
-
-                @Override
-                public ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
-                    View item =
-                            LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item,
-                                    parent, false);
-                    return new ViewHolder(item);
-                }
-
-                @Override
-                public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-                    Pair<CharSequence, View.OnClickListener> pair = mButtons.get(position);
-                    holder.bind(pair.first, pair.second);
-                }
-            };
-
     /**
      * For changing values from lambdas
      */
@@ -299,28 +258,4 @@ public class  ToolbarActivity extends AppCompatActivity implements InsetsChanged
         }
     }
 
-    /**
-     * Used for getting text from a dialog.
-     */
-    private static final class SimpleTextWatcher implements TextWatcher {
-
-        private String mValue;
-
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-            mValue = s.toString();
-        }
-
-        public String getText() {
-            return mValue;
-        }
-    }
 }

@@ -29,6 +29,7 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
@@ -46,50 +47,52 @@ fun SearchView(
     onQueryTextSubmit: (() -> Unit)? = null,
     onClear: (() -> Unit)? = null,
 ) {
-    val isEditable = enabled && !restricted
-    val iconSize = dimensionResource(id = R.dimen.car_ui_primary_icon_size)
     val iconSpacing = dimensionResource(id = R.dimen.car_ui_toolbar_icon_spacing)
-
+    val isEditable = enabled && !restricted
     Surface(
         modifier = modifier,
-        color = MaterialTheme.colors.surface
+        color = colorResource(R.color.car_ui_toolbar_background)
     ) {
         Row(
             Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                painter = painterResource(id = R.drawable.car_ui_icon_search),
-                contentDescription = "Search",
-                tint = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
-                modifier = Modifier.size(iconSize)
-            )
             CarUiEditText(
                 value = value,
                 onValueChange = onValueChange,
                 hint = hint,
                 enabled = enabled,
                 restricted = restricted,
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.car_ui_icon_search),
+                        contentDescription = "Search",
+                        tint = MaterialTheme.colors.onSurface,
+                        modifier = Modifier.size(dimensionResource(id = R.dimen.car_ui_primary_icon_size))
+                    )
+                },
+                trailingIcon = {
+                    if (value.isNotEmpty() && isEditable && onClear != null) {
+                        IconButton(
+                            onClick = onClear,
+                            enabled = isEditable,
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.car_ui_icon_close),
+                                contentDescription = "Clear",
+                                modifier = Modifier.size(dimensionResource(id = R.dimen.car_ui_primary_icon_size)),
+                                tint = MaterialTheme.colors.onSurface
+                            )
+                        }
+                    }
+                },
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = iconSpacing, end = iconSpacing),
                 imeAction = ImeAction.Search,
                 keyboardType = KeyboardType.Text,
-                onImeAction = { onQueryTextSubmit?.invoke() }
+                onImeAction = { onQueryTextSubmit?.invoke() },
             )
-            if (value.isNotEmpty() && isEditable && onClear != null) {
-                IconButton(
-                    onClick = onClear,
-                    enabled = isEditable,
-                    modifier = Modifier.size(iconSize)
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.car_ui_icon_close),
-                        contentDescription = "Clear",
-                        tint = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
-                    )
-                }
-            }
         }
     }
 }

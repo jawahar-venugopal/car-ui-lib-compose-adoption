@@ -52,42 +52,13 @@ public class MainActivity extends Activity implements InsetsChangedListener {
      * List of all sample activities.
      */
     private final List<ListElement> mActivities = Arrays.asList(
-            new ActivityElement("Dialogs sample", DialogsActivity.class),
             new ActivityElement("List sample", CarUiRecyclerViewActivity.class),
             new ActivityElement("Grid sample", GridCarUiRecyclerViewActivity.class),
+            new ActivityElement("ListItem sample", CarUiListItemActivity.class),
             new ActivityElement("Preferences sample", PreferenceActivity.class),
             new ActivityElement("Toolbar sample", ToolbarActivity.class),
-            new ActivityElement("ListItem sample", CarUiListItemActivity.class));
-
-    private abstract static class ViewHolder extends RecyclerView.ViewHolder {
-
-        ViewHolder(@NonNull View itemView) {
-            super(itemView);
-        }
-
-        public abstract void bind(ListElement element);
-    }
-
-    private class ActivityViewHolder extends ViewHolder {
-        private final Button mButton;
-
-        ActivityViewHolder(@NonNull View itemView) {
-            super(itemView);
-            mButton = itemView.requireViewById(R.id.button);
-        }
-
-        @Override
-        public void bind(ListElement e) {
-            if (!(e instanceof ActivityElement)) {
-                throw new IllegalArgumentException("Expected an ActivityElement");
-            }
-            ActivityElement element = (ActivityElement) e;
-            mButton.setText(element.getText());
-            mButton.setOnClickListener(v ->
-                    startActivity(new Intent(itemView.getContext(), element.getActivity())));
-        }
-    }
-
+            new ActivityElement("Dialogs sample", DialogsActivity.class)
+          );
     private final RecyclerView.Adapter<ViewHolder> mAdapter =
             new RecyclerView.Adapter<ViewHolder>() {
                 @NonNull
@@ -143,6 +114,15 @@ public class MainActivity extends Activity implements InsetsChangedListener {
                 .setPadding(insets.getLeft(), 0, insets.getRight(), 0);
     }
 
+    private abstract static class ViewHolder extends RecyclerView.ViewHolder {
+
+        ViewHolder(@NonNull View itemView) {
+            super(itemView);
+        }
+
+        public abstract void bind(ListElement element);
+    }
+
     private abstract static class ListElement {
         static final int TYPE_ACTIVITY = 0;
 
@@ -174,6 +154,26 @@ public class MainActivity extends Activity implements InsetsChangedListener {
         @Override
         int getType() {
             return TYPE_ACTIVITY;
+        }
+    }
+
+    private class ActivityViewHolder extends ViewHolder {
+        private final Button mButton;
+
+        ActivityViewHolder(@NonNull View itemView) {
+            super(itemView);
+            mButton = itemView.requireViewById(R.id.button);
+        }
+
+        @Override
+        public void bind(ListElement e) {
+            if (!(e instanceof ActivityElement)) {
+                throw new IllegalArgumentException("Expected an ActivityElement");
+            }
+            ActivityElement element = (ActivityElement) e;
+            mButton.setText(element.getText());
+            mButton.setOnClickListener(v ->
+                    startActivity(new Intent(itemView.getContext(), element.getActivity())));
         }
     }
 

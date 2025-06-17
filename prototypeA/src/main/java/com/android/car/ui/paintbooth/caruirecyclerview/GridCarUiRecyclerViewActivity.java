@@ -32,7 +32,9 @@ import com.android.car.ui.toolbar.ToolbarController;
 
 import java.util.ArrayList;
 
-/** Activity that shows GridCarUiRecyclerView example with sample data. */
+/**
+ * Activity that shows GridCarUiRecyclerView example with sample data.
+ */
 public class GridCarUiRecyclerViewActivity extends Activity implements
         InsetsChangedListener {
     private final ArrayList<String> mData = new ArrayList<>();

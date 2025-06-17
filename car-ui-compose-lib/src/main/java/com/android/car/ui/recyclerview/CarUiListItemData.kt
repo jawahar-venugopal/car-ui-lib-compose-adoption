@@ -25,7 +25,7 @@ sealed class CarUiListItemData {
 
     data class Header(
         val text: String,
-        val body : String? = null
+        val body: String? = null
     ) : CarUiListItemData()
 
     data class Content(
@@ -40,10 +40,10 @@ sealed class CarUiListItemData {
 
     data class ActionCheckBox(
         val title: String,
-        val body : String? = null,
+        val body: String? = null,
         val icon: Painter? = null,
         val iconType: CarUiContentListItemIconType = CarUiContentListItemIconType.STANDARD,
-        val checked: Boolean= false,
+        val checked: Boolean = false,
         val enabled: Boolean = true,
         val restricted: Boolean = false,
         val onCheckedChange: ((Boolean) -> Unit)? = null
@@ -73,7 +73,7 @@ sealed class CarUiListItemData {
 
     data class ActionRadioButton(
         val title: String? = null,
-        val body : String? = null,
+        val body: String? = null,
         val icon: Painter? = null,
         val iconType: CarUiContentListItemIconType = CarUiContentListItemIconType.STANDARD,
         val selected: Boolean,
@@ -83,8 +83,8 @@ sealed class CarUiListItemData {
     ) : CarUiListItemData()
 
     data class ActionSwitch(
-        val title: String?= null,
-        val body : String? = null,
+        val title: String? = null,
+        val body: String? = null,
         val icon: Painter? = null,
         val iconType: CarUiContentListItemIconType = CarUiContentListItemIconType.STANDARD,
         val checked: Boolean = false,

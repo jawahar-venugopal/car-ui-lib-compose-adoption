@@ -102,7 +102,6 @@ fun CarUiAlertDialog(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Icon on the left
                     params.icon?.let {
                         Image(
                             painter = it,
@@ -113,8 +112,11 @@ fun CarUiAlertDialog(
                             contentScale = ContentScale.Fit
                         )
                     }
-                    // Title & subtitle stacked vertically
-                    Column(modifier = Modifier.align(alignment = Alignment.CenterVertically).padding(start = dimensionResource(R.dimen.car_ui_padding_5))) {
+                    Column(
+                        modifier = Modifier
+                            .align(alignment = Alignment.CenterVertically)
+                            .padding(start = dimensionResource(R.dimen.car_ui_padding_5))
+                    ) {
                         params.title?.let {
                             Text(
                                 text = it,
@@ -146,13 +148,11 @@ fun CarUiAlertDialog(
                         )
                     }
 
-                    // EditText (prompt, etc.)
                     params.editTextOnValueChange?.let { onValueChange ->
                         var value by remember { mutableStateOf(params.editTextValue ?: "") }
                         CarUiEditText(
                             value = value,
                             onValueChange = {
-                                // Input filters (if any)
                                 var filtered = it
                                 params.editTextInputFilters?.forEach { filter ->
                                     val spanned = android.text.SpannableStringBuilder(filtered)
@@ -172,23 +172,28 @@ fun CarUiAlertDialog(
                         )
                     }
 
-                    // Single-choice
                     params.singleChoiceItems?.let { items ->
-                        var selectedIndex by remember { mutableStateOf(params.singleChoiceSelectedIndex ?: -1) }
+                        var selectedIndex by remember {
+                            mutableStateOf(
+                                params.singleChoiceSelectedIndex ?: -1
+                            )
+                        }
                         CarUiRecyclerView(
                             items = items,
                         ) { item ->
                             val index = items.indexOf(item)
-                            CarUiRadioButtonListItem(title = item, selected = index == selectedIndex, onSelectedChange = { isSelected ->
-                                if (isSelected) {
-                                    selectedIndex = index
-                                    params.onSingleChoiceSelect?.invoke(index)
-                                }
-                            })
+                            CarUiRadioButtonListItem(
+                                title = item,
+                                selected = index == selectedIndex,
+                                onSelectedChange = { isSelected ->
+                                    if (isSelected) {
+                                        selectedIndex = index
+                                        params.onSingleChoiceSelect?.invoke(index)
+                                    }
+                                })
                         }
                     }
 
-                    // Multi-choice
                     params.multiChoiceItems?.let { items ->
                         var checkedStates by remember { mutableStateOf(List(items.size) { false }) }
 
@@ -198,7 +203,8 @@ fun CarUiAlertDialog(
                                 title = item,
                                 checked = checkedStates[index],
                                 onCheckedChange = { isChecked ->
-                                    checkedStates = checkedStates.toMutableList().also { it[index] = isChecked }
+                                    checkedStates =
+                                        checkedStates.toMutableList().also { it[index] = isChecked }
                                     params.onMultiChoiceChange?.invoke(index, isChecked)
                                 }
                             )

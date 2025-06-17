@@ -36,7 +36,7 @@ public class RecyclerViewAdapter extends
         RecyclerView.Adapter<RecyclerViewAdapter.RecyclerViewHolder> {
 
     private final Context mContext;
-    private List<String> mData;
+    private final List<String> mData;
 
     public RecyclerViewAdapter(Context context, List<String> data) {
         this.mContext = context;

@@ -63,7 +63,6 @@ fun <T> CarUiRecyclerView(
     Box(modifier = modifier.then(recyclerViewHeight)) {
         if (layoutStyle == CarUiRecyclerViewLayoutStyle.GRID && numOfColumns > 1) {
             val gridState = rememberLazyGridState()
-            // Grid with scrollbar
             Box {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(numOfColumns),
@@ -74,7 +73,6 @@ fun <T> CarUiRecyclerView(
                 ) {
                     items(items) { item ->
                         itemContent(item)
-                        // No dividers for grid for visual parity
                     }
                 }
             }
@@ -86,7 +84,6 @@ fun <T> CarUiRecyclerView(
             }
         } else {
             val listState = rememberLazyListState()
-            // List with scrollbar
             Box {
                 LazyColumn(
                     state = listState,

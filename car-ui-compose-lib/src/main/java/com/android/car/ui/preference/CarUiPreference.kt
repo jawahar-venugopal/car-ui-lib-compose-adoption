@@ -18,6 +18,7 @@
  */
 package com.android.car.ui.preference
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,29 +36,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import com.android.car.ui.R
 
 @Composable
 fun CarUiPreference(
-    title: String,
+    title: AnnotatedString,
     summary: String? = null,
     icon: Painter? = null,
     enabled: Boolean = true,
     restricted: Boolean = false,
-    showChevron: Boolean = true,
+    showChevron: Boolean = false,
     clickableWhileDisabled: Boolean = false,
     onClick: (() -> Unit)? = null,
     onRestrictedClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
-    val isEnabled = enabled && !restricted
+    val isEnabled = enabled && !restricted && LocalPreferenceCategoryEnabled.current
     val clickable = isEnabled || clickableWhileDisabled
-    val contentColor =
-        if (isEnabled) MaterialTheme.colors.onBackground else MaterialTheme.colors.onSurface.copy(
-            alpha = 0.38f
-        )
     val background = MaterialTheme.colors.background
     val padding = dimensionResource(id = R.dimen.car_ui_pref_padding)
     val minHeight = dimensionResource(id = R.dimen.car_ui_pref_min_height)
@@ -69,7 +70,6 @@ fun CarUiPreference(
         color = background,
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = padding)
             .alpha(if (restricted) ContentAlpha.disabled else 1f)
             .heightIn(min = minHeight),
         shape = shape,
@@ -84,30 +84,36 @@ fun CarUiPreference(
                         else -> it
                     }
                 }
-                .padding(all = padding),
+                .padding(vertical = padding),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (icon != null) {
-                Icon(
+                Image(
                     painter = icon,
                     contentDescription = null,
-                    tint = contentColor,
                     modifier = Modifier
                         .size(iconSize)
-                        .padding(end = iconSpacing)
+                        .align(alignment = Alignment.CenterVertically),
+                    contentScale = ContentScale.Fit
                 )
             }
-            Column(Modifier.weight(1f)) {
+            Column(
+                Modifier
+                    .weight(1f)
+                    .padding(start = if (icon != null) iconSpacing else 0.dp)
+            ) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.h6,
-                    color = contentColor
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 if (!summary.isNullOrBlank()) {
                     Text(
                         text = summary,
-                        style = MaterialTheme.typography.body2,
-                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
+                        style = MaterialTheme.typography.subtitle1,
+                        color = MaterialTheme.colors.onSecondary
                     )
                 }
             }
@@ -115,7 +121,7 @@ fun CarUiPreference(
                 Icon(
                     painter = painterResource(id = R.drawable.car_ui_icon_chevron),
                     contentDescription = "Chevron",
-                    tint = MaterialTheme.colors.onSurface.copy(alpha = 0.7f),
+                    tint = MaterialTheme.colors.onSurface,
                     modifier = Modifier.size(iconSize)
                 )
             }

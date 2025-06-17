@@ -54,6 +54,27 @@ import java.util.List;
 public class DialogsActivity extends Activity implements InsetsChangedListener {
 
     private final List<Pair<Integer, View.OnClickListener>> mButtons = new ArrayList<>();
+    private final RecyclerView.Adapter<ViewHolder> mAdapter =
+            new RecyclerView.Adapter<ViewHolder>() {
+                @Override
+                public int getItemCount() {
+                    return mButtons.size();
+                }
+
+                @Override
+                public ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
+                    View item =
+                            LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item,
+                                    parent, false);
+                    return new ViewHolder(item);
+                }
+
+                @Override
+                public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+                    Pair<Integer, View.OnClickListener> pair = mButtons.get(position);
+                    holder.bind(pair.first, pair.second);
+                }
+            };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -300,11 +321,11 @@ public class DialogsActivity extends Activity implements InsetsChangedListener {
     private void showMultiPermissionDialog() {
         if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
                 && checkSelfPermission(Manifest.permission.SEND_SMS)
-                    == PackageManager.PERMISSION_GRANTED
+                == PackageManager.PERMISSION_GRANTED
                 && checkSelfPermission(Manifest.permission.READ_CONTACTS)
-                    == PackageManager.PERMISSION_GRANTED) {
+                == PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "Permissions are already granted. Remove CAMERA, SEND_SMS or "
-                    + "READ_CONTACTS permission from Settings > All apps > PaintBooth",
+                            + "READ_CONTACTS permission from Settings > All apps > PaintBooth",
                     Toast.LENGTH_SHORT).show();
             return;
         }
@@ -322,7 +343,7 @@ public class DialogsActivity extends Activity implements InsetsChangedListener {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            int[] grantResults) {
+                                           int[] grantResults) {
         StringBuilder sb = new StringBuilder();
         sb.append("Permission ");
         for (int i = 0; i < permissions.length; i++) {
@@ -332,6 +353,17 @@ public class DialogsActivity extends Activity implements InsetsChangedListener {
             sb.append("\n");
         }
         Toast.makeText(this, sb.toString(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCarUiInsetsChanged(@NonNull Insets insets) {
+        FocusArea focusArea = requireViewById(R.id.focus_area);
+        focusArea.setBoundsOffset(0, insets.getTop(), 0, insets.getBottom());
+        focusArea.setHighlightPadding(0, insets.getTop(), 0, insets.getBottom());
+        requireViewById(R.id.list)
+                .setPadding(0, insets.getTop(), 0, insets.getBottom());
+        requireViewById(android.R.id.content)
+                .setPadding(insets.getLeft(), 0, insets.getRight(), 0);
     }
 
     private static class ViewHolder extends RecyclerView.ViewHolder {
@@ -347,38 +379,5 @@ public class DialogsActivity extends Activity implements InsetsChangedListener {
             mButton.setText(title);
             mButton.setOnClickListener(listener);
         }
-    }
-
-    private final RecyclerView.Adapter<ViewHolder> mAdapter =
-            new RecyclerView.Adapter<ViewHolder>() {
-                @Override
-                public int getItemCount() {
-                    return mButtons.size();
-                }
-
-                @Override
-                public ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
-                    View item =
-                            LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item,
-                                    parent, false);
-                    return new ViewHolder(item);
-                }
-
-                @Override
-                public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-                    Pair<Integer, View.OnClickListener> pair = mButtons.get(position);
-                    holder.bind(pair.first, pair.second);
-                }
-            };
-
-    @Override
-    public void onCarUiInsetsChanged(@NonNull Insets insets) {
-        FocusArea focusArea = requireViewById(R.id.focus_area);
-        focusArea.setBoundsOffset(0, insets.getTop(), 0, insets.getBottom());
-        focusArea.setHighlightPadding(0, insets.getTop(), 0, insets.getBottom());
-        requireViewById(R.id.list)
-                .setPadding(0, insets.getTop(), 0, insets.getBottom());
-        requireViewById(android.R.id.content)
-                .setPadding(insets.getLeft(), 0, insets.getRight(), 0);
     }
 }

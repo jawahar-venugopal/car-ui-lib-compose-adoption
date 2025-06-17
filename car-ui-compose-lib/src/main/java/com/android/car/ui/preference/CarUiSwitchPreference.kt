@@ -18,6 +18,7 @@
  */
 package com.android.car.ui.preference
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,39 +31,72 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Switch
-import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
 import com.android.car.ui.R
+import com.android.car.ui.utils.dataStore
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 @Composable
 fun CarUiSwitchPreference(
+    key: String,
     title: String,
     summary: String? = null,
     icon: Painter? = null,
-    checked: Boolean,
-    onCheckedChange: ((Boolean) -> Unit)? = null,
+    defaultChecked: Boolean = false,
     enabled: Boolean = true,
     restricted: Boolean = false,
     onRestrictedClick: (() -> Unit)? = null,
     clickableWhileDisabled: Boolean = false,
-    onDisabledClick: (() -> Unit)? = null, // <-- Disabled click handler
+    onDisabledClick: (() -> Unit)? = null,
     showChevron: Boolean = false,
     modifier: Modifier = Modifier,
+    checked: Boolean? = null,
+    onCheckedChange: ((Boolean) -> Unit)? = null,
 ) {
-    // Logic for click state
-    val isEnabled = enabled && !restricted
+    val context = LocalContext.current
+    val dataStore = context.dataStore
+    val prefKey = booleanPreferencesKey(key)
+    var internalChecked by remember { mutableStateOf(defaultChecked) }
+    var loaded by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+
+    val isAuto = checked == null || onCheckedChange == null
+
+    LaunchedEffect(key) {
+        if (isAuto) {
+            val prefs = dataStore.data.first()
+            internalChecked = prefs[prefKey] ?: defaultChecked
+            loaded = true
+        } else {
+            loaded = true
+        }
+    }
+
+    if (!loaded) return
+
+    val actualChecked = checked ?: internalChecked
+    val isEnabled = enabled && !restricted && LocalPreferenceCategoryEnabled.current
     val isClickable = (enabled || clickableWhileDisabled) && !restricted
-    val contentColor =
-        if (isEnabled) MaterialTheme.colors.onBackground else MaterialTheme.colors.onSurface.copy(
-            alpha = 0.38f
-        )
     val background = MaterialTheme.colors.background
     val padding = dimensionResource(id = R.dimen.car_ui_pref_padding)
     val minHeight = dimensionResource(id = R.dimen.car_ui_pref_min_height)
@@ -74,7 +108,6 @@ fun CarUiSwitchPreference(
         color = background,
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = padding)
             .alpha(if (restricted) ContentAlpha.disabled else 1f)
             .heightIn(min = minHeight),
         shape = shape,
@@ -84,36 +117,48 @@ fun CarUiSwitchPreference(
                 .fillMaxWidth()
                 .let {
                     when {
-                        isEnabled && onCheckedChange != null -> it.clickable { onCheckedChange(!checked) }
+                        isEnabled && (onCheckedChange != null || isAuto) -> it.clickable {
+                            val newValue = !actualChecked
+                            if (isAuto) {
+                                internalChecked = newValue
+                                scope.launch { dataStore.edit { it[prefKey] = newValue } }
+                            }
+                            onCheckedChange?.invoke(newValue)
+                        }
+
                         restricted && onRestrictedClick != null -> it.clickable { onRestrictedClick() }
                         !isEnabled && onDisabledClick != null -> it.clickable { onDisabledClick() }
                         else -> it
                     }
                 }
-                .padding(all = padding),
+                .padding(vertical = padding),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (icon != null) {
-                Icon(
+                Image(
                     painter = icon,
                     contentDescription = null,
-                    tint = contentColor,
                     modifier = Modifier
                         .size(iconSize)
-                        .padding(end = iconSpacing)
+                        .align(alignment = Alignment.CenterVertically),
+                    contentScale = ContentScale.Fit
                 )
             }
-            Column(Modifier.weight(1f)) {
+            Column(
+                Modifier
+                    .weight(1f)
+                    .padding(start = if (icon != null) iconSpacing else 0.dp)
+            ) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.h6,
-                    color = contentColor
+                    style = MaterialTheme.typography.body1,
+                    color = MaterialTheme.colors.onSurface
                 )
                 if (!summary.isNullOrBlank()) {
                     Text(
                         text = summary,
-                        style = MaterialTheme.typography.body2,
-                        color = MaterialTheme.colors.onSurface.copy(alpha = 0.7f)
+                        style = MaterialTheme.typography.subtitle1,
+                        color = MaterialTheme.colors.onSecondary
                     )
                 }
             }
@@ -126,13 +171,20 @@ fun CarUiSwitchPreference(
                 )
             }
             Switch(
-                checked = checked,
-                onCheckedChange = if (isEnabled && onCheckedChange != null) onCheckedChange else null,
+                checked = actualChecked,
+                onCheckedChange = if (isEnabled && (onCheckedChange != null || isAuto)) {
+                    { newValue ->
+                        if (isAuto) {
+                            internalChecked = newValue
+                            scope.launch { dataStore.edit { it[prefKey] = newValue } }
+                        }
+                        onCheckedChange?.invoke(newValue)
+                    }
+                } else null,
                 enabled = isClickable,
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = MaterialTheme.colors.primary,
-                    uncheckedThumbColor = MaterialTheme.colors.onSurface.copy(alpha = 0.38f)
-                )
+                modifier = Modifier
+                    .scale(2.0f)
+                    .padding(end = padding),
             )
         }
     }

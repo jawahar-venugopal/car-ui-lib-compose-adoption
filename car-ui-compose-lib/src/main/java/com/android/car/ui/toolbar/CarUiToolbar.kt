@@ -18,8 +18,8 @@
  */
 package com.android.car.ui.toolbar
 
-import android.app.Activity
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,9 +31,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -47,18 +48,20 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.android.car.ui.R
 
 @Composable
 fun CarUiToolbar(
     title: String = "",
     subtitle: String? = null,
-    navIconType: CarUiToolbarNavIconType = CarUiToolbarNavIconType.None,
+    navIconType: CarUiToolbarNavIconType = CarUiToolbarNavIconType.Disabled,
     logo: Painter? = null,
     menuItems: List<CarUiToolbarMenuItem> = emptyList(),
     showOverflowMenu: Boolean = false,
     overflowMenuItems: List<CarUiToolbarMenuItem> = emptyList(),
     searchMode: SearchMode = SearchMode.DISABLED,
+    searchHint: String? = null,
     searchQuery: String = "",
     onSearchQueryChanged: ((String) -> Unit)? = null,
     onSearchSubmitted: (() -> Unit)? = null,
@@ -66,8 +69,7 @@ fun CarUiToolbar(
     modifier: Modifier = Modifier,
     backgroundColor: Color = colorResource(R.color.car_ui_toolbar_background),
     restricted: Boolean = false,
-    onMenuItemCheckedChange: ((id: Int, checked: Boolean) -> Unit)? = null,
-    onMenuItemActivatedChange: ((id: Int, activated: Boolean) -> Unit)? = null,
+    showProgressBar: Boolean = false,
 ) {
     val toolbarMargin = dimensionResource(id = R.dimen.car_ui_toolbar_margin)
     val navIconSize = dimensionResource(id = R.dimen.car_ui_toolbar_nav_icon_size)
@@ -78,195 +80,169 @@ fun CarUiToolbar(
     val menuItemIconBgSize =
         dimensionResource(id = R.dimen.car_ui_toolbar_menu_item_icon_background_size)
     val toolbarHeight = dimensionResource(id = R.dimen.car_ui_toolbar_row_height)
+    val progressbarHeight = 8.dp
     val elevation = dimensionResource(id = R.dimen.car_ui_toolbar_elevation)
-    val searchIconContainerWidth =
-        dimensionResource(id = R.dimen.car_ui_toolbar_search_search_icon_container_width)
-    val closeIconContainerWidth =
-        dimensionResource(id = R.dimen.car_ui_toolbar_search_close_icon_container_width)
-    val searchIconSize = dimensionResource(id = R.dimen.car_ui_toolbar_search_search_icon_size)
-    val closeIconSize = dimensionResource(id = R.dimen.car_ui_toolbar_search_close_icon_size)
 
     Surface(
         color = backgroundColor,
         modifier = modifier
             .fillMaxWidth()
-            .height(toolbarHeight),
+            .height(toolbarHeight + progressbarHeight),
         elevation = elevation
     ) {
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Column(modifier = modifier.fillMaxWidth()) {
             Box(
                 modifier = Modifier
-                    .width(toolbarMargin)
-                    .fillMaxHeight(),
+                    .weight(1f)
+                    .height(toolbarHeight),
                 contentAlignment = Alignment.Center
             ) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxHeight()
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val context = LocalContext.current
-                    val activity = context as? ComponentActivity
-                    if (navIconType != CarUiToolbarNavIconType.None) {
-                        IconButton(
-                            onClick = { when (navIconType) {
-                                CarUiToolbarNavIconType.Back -> activity?.onBackPressedDispatcher?.onBackPressed()
-                                CarUiToolbarNavIconType.Close -> activity?.finish()
-                                else -> {}
-                            } },
-                            enabled = !restricted,
-                            modifier = Modifier.size(navIconSize)
-                        ) {
-                            Icon(
-                                painter = when (navIconType) {
-                                    CarUiToolbarNavIconType.Back -> painterResource(id = R.drawable.car_ui_icon_arrow_back)
-                                    CarUiToolbarNavIconType.Close -> painterResource(id = R.drawable.car_ui_icon_close)
-                                    else -> return@IconButton
-                                },
-                                contentDescription = navIconType.name,
-                                modifier = Modifier.fillMaxSize(),
-                                tint = MaterialTheme.colors.onSurface
-                            )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .widthIn(min = toolbarMargin)
+                            .padding(
+                                top = 10.dp, bottom = 10.dp, start = 16.dp, end = titleMarginStart
+                            ),
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        val context = LocalContext.current
+                        val activity = context as? ComponentActivity
+                        if (navIconType != CarUiToolbarNavIconType.Disabled) {
+                            IconButton(
+                                onClick = {
+                                    when (navIconType) {
+                                        CarUiToolbarNavIconType.Back -> if (searchMode == SearchMode.DISABLED) activity?.onBackPressedDispatcher?.onBackPressed() else onSearchModeChanged?.invoke(
+                                            SearchMode.DISABLED
+                                        )
+
+                                        CarUiToolbarNavIconType.Close -> activity?.finish()
+                                        else -> {}
+                                    }
+                                }, enabled = !restricted, modifier = Modifier.size(76.dp)
+                            ) {
+                                Icon(
+                                    painter = when (navIconType) {
+                                        CarUiToolbarNavIconType.Back -> painterResource(id = R.drawable.car_ui_icon_arrow_back)
+                                        CarUiToolbarNavIconType.Close -> painterResource(id = R.drawable.car_ui_icon_close)
+                                        CarUiToolbarNavIconType.Down -> painterResource(id = R.drawable.car_ui_icon_down)
+                                        else -> return@IconButton
+                                    },
+                                    contentDescription = navIconType.name,
+                                    modifier = Modifier.size(navIconSize),
+                                    tint = MaterialTheme.colors.onSurface
+                                )
+                            }
+                        }
+                        if (logo != null) {
+                            IconButton(
+                                modifier = Modifier.size(76.dp), onClick = {}) {
+                                Icon(
+                                    painter = logo,
+                                    contentDescription = "Logo",
+                                    modifier = Modifier.size(logoSize),
+                                    tint = Color.Unspecified
+                                )
+                            }
                         }
                     }
-                    if (logo != null) {
-                        Icon(
-                            painter = logo,
-                            contentDescription = "Logo",
-                            modifier = Modifier.size(logoSize),
-                            tint = Color.Unspecified
-                        )
+
+                    if (searchMode == SearchMode.SEARCH || searchMode == SearchMode.EDIT) {
+                        Row(
+                            modifier = Modifier.weight(1f),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            SearchView(
+                                value = searchQuery,
+                                hint = searchHint
+                                    ?: if (searchMode == SearchMode.SEARCH) stringResource(id = R.string.car_ui_search_hint)
+                                    else stringResource(id = R.string.car_ui_edit_hint),
+                                enabled = !restricted,
+                                restricted = restricted,
+                                onValueChange = { onSearchQueryChanged?.invoke(it) },
+                                onQueryTextSubmit = { onSearchSubmitted?.invoke() },
+                                onClear = {
+                                    onSearchQueryChanged?.invoke("")
+                                    onSearchModeChanged?.invoke(SearchMode.SEARCH)
+                                },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    } else {
+                        Column(
+                            modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = title,
+                                style = MaterialTheme.typography.h1,
+                                color = colorResource(R.color.car_ui_text_color_primary)
+                            )
+                            if (!subtitle.isNullOrEmpty()) {
+                                Text(
+                                    text = subtitle,
+                                    style = MaterialTheme.typography.subtitle1,
+                                    color = colorResource(R.color.car_ui_text_color_primary).copy(
+                                        alpha = 0.8f
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+                if (searchMode == SearchMode.DISABLED) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End,
+                        modifier = Modifier
+                            .background(color = backgroundColor)
+                            .align(Alignment.CenterEnd)
+                            .padding(end = toolbarMargin)
+                    ) {
+                        menuItems.filter { !it.isSearch }.forEach { menuItem ->
+                            CarUiToolbarMenuItemView(
+                                menuItem = menuItem,
+                                iconSize = menuItemIconSize,
+                                iconBgSize = menuItemIconBgSize,
+                            )
+                            Spacer(Modifier.padding(end = menuItemMargin))
+                        }
+                        val searchMenuItem = menuItems.firstOrNull { it.isSearch && it.visible }
+                        if (searchMenuItem != null && searchMenuItem.iconRes != null) {
+                            CarUiToolbarMenuItemView(
+                                menuItem = searchMenuItem.copy(onClick = {
+                                    onSearchModeChanged?.invoke(SearchMode.SEARCH)
+                                }),
+                                iconSize = menuItemIconSize,
+                                iconBgSize = menuItemIconBgSize,
+                            )
+                        }
+                        if (showOverflowMenu && overflowMenuItems.isNotEmpty()) {
+                            IconButton(
+                                onClick = { /* TODO: show overflow */ },
+                                modifier = Modifier.size(menuItemIconSize)
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.car_ui_icon_overflow_menu),
+                                    contentDescription = "More",
+                                    tint = MaterialTheme.colors.onPrimary
+                                )
+                            }
+                        }
                     }
                 }
             }
-
-            if (searchMode == SearchMode.SEARCH || searchMode == SearchMode.EDIT) {
-                // --- SEARCH/EDIT MODE ---
-                Row(
+            if (showProgressBar) {
+                LinearProgressIndicator(
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(start = titleMarginStart),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Search icon container
-                    Box(
-                        modifier = Modifier.width(searchIconContainerWidth),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.car_ui_icon_search),
-                            contentDescription = stringResource(id = R.string.car_ui_search_content_desc),
-                            modifier = Modifier.size(searchIconSize),
-                            tint = MaterialTheme.colors.onPrimary
-                        )
-                    }
-                    // Search input
-                    SearchView(
-                        value = searchQuery,
-                        onValueChange = { onSearchQueryChanged?.invoke(it) },
-                        hint = if (searchMode == SearchMode.SEARCH)
-                            stringResource(id = R.string.car_ui_search_hint)
-                        else
-                            stringResource(id = R.string.car_ui_edit_hint),
-                        enabled = !restricted,
-                        restricted = restricted,
-                        onQueryTextSubmit = { onSearchSubmitted?.invoke() },
-                        onClear = { onSearchQueryChanged?.invoke("") },
-                        modifier = Modifier.weight(1f)
-                    )
-                    // Close/cancel icon container
-                    Box(
-                        modifier = Modifier.width(closeIconContainerWidth),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        IconButton(
-                            onClick = { onSearchModeChanged?.invoke(SearchMode.DISABLED) },
-                            enabled = !restricted,
-                            modifier = Modifier.size(closeIconSize)
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.car_ui_icon_close),
-                                contentDescription = "Close Search",
-                                tint = if (!restricted) MaterialTheme.colors.onPrimary else MaterialTheme.colors.onSurface.copy(
-                                    alpha = 0.38f
-                                )
-                            )
-                        }
-                    }
-                }
-            } else {
-                // --- NORMAL TOOLBAR MODE ---
-                Column(
-                    modifier = Modifier
-                        .weight(1f),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.h1,
-                        color = colorResource(R.color.car_ui_text_color_primary)
-                    )
-                    if (!subtitle.isNullOrEmpty()) {
-                        Text(
-                            text = subtitle,
-                            style = MaterialTheme.typography.subtitle2,
-                            color = colorResource(R.color.car_ui_text_color_primary).copy(alpha = 0.8f)
-                        )
-                    }
-                }
-                menuItems.filter { !it.isSearch }.forEach { menuItem ->
-                    CarUiToolbarMenuItemView(
-                        menuItem = menuItem,
-                        iconSize = menuItemIconSize,
-                        iconBgSize = menuItemIconBgSize,
-                        onCheckedChange = { checked ->
-                            onMenuItemCheckedChange?.invoke(
-                                menuItem.id,
-                                checked
-                            )
-                        },
-                        onActivatedChange = { activated ->
-                            onMenuItemActivatedChange?.invoke(
-                                menuItem.id,
-                                activated
-                            )
-                        }
-                    )
-                    Spacer(Modifier.padding(end = menuItemMargin))
-                }
-                // Menu Items
-                val searchMenuItem = menuItems.firstOrNull { it.isSearch && it.visible }
-                if (searchMenuItem != null) {
-                    // Search icon (to enter search mode)
-                    IconButton(
-                        onClick = { onSearchModeChanged?.invoke(SearchMode.SEARCH) },
-                        enabled = !restricted,
-                        modifier = Modifier.size(menuItemIconSize)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.car_ui_icon_search),
-                            contentDescription = "Search",
-                            tint = MaterialTheme.colors.onPrimary
-                        )
-                    }
-                    Spacer(Modifier.padding(end = menuItemMargin))
-                }
-                // Overflow menu
-                if (showOverflowMenu && overflowMenuItems.isNotEmpty()) {
-                    IconButton(
-                        onClick = { /* TODO: show overflow */ },
-                        modifier = Modifier.size(menuItemIconSize)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.car_ui_icon_overflow_menu),
-                            contentDescription = "More",
-                            tint = MaterialTheme.colors.onPrimary
-                        )
-                    }
-                }
+                        .fillMaxWidth()
+                        .height(progressbarHeight),
+                )
             }
         }
     }

@@ -31,7 +31,6 @@ data class CarUiAlertDialogParams(
     val message: String? = null,
     val icon: Painter? = null,
 
-    // EditText
     val editTextValue: String? = null,
     val editTextPrompt: String? = null,
     val editTextOnValueChange: ((String) -> Unit)? = null,
@@ -39,20 +38,16 @@ data class CarUiAlertDialogParams(
     val editTextKeyboardType: KeyboardType = KeyboardType.Text,
     val editTextVisualTransformation: VisualTransformation = VisualTransformation.None,
 
-    // Single-choice
     val singleChoiceItems: List<String>? = null,
     val singleChoiceSelectedIndex: Int? = null,
     val onSingleChoiceSelect: ((Int) -> Unit)? = null,
 
-    // Multi-choice
     val multiChoiceItems: List<String>? = null,
     val multiChoiceChecked: List<Boolean>? = null,
     val onMultiChoiceChange: ((Int, Boolean) -> Unit)? = null,
 
-    // Custom content slot
     val content: (@Composable (androidx.compose.foundation.layout.ColumnScope.() -> Unit))? = null,
 
-    // Buttons
     val positiveButton: String? = null,
     val onPositiveClick: (() -> Unit)? = null,
     val negativeButton: String? = null,
@@ -60,7 +55,6 @@ data class CarUiAlertDialogParams(
     val neutralButton: String? = null,
     val onNeutralClick: (() -> Unit)? = null,
 
-    // Dismiss
     val dismissOnClickOutside: Boolean = true,
     val onDismiss: (() -> Unit)? = null,
 )

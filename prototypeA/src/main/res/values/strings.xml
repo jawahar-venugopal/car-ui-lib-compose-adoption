@@ -26,7 +26,7 @@
   <eat-comment/>
 
   <!-- Preferences page title [CHAR_LIMIT=13] -->
-  <string name="preferences_screen_title">Settings</string>
+  <string name="preferences_screen_title">Settings - Prototype A</string>
 
   <!--This section is for basic attributes -->
   <eat-comment/>
@@ -287,9 +287,7 @@
   <string name="test_data">Test data</string>
   <string name="body_item_with_switch">Body — Item with switch  — with click listener</string>
   <string name="item_with_chevron">Item with chevron</string>
-  <string name="random_body_text_with_action_divider">Random body text — with action divider</string>
-  <string name="null_supplement_icon">Null supplemental icon</string>
-  <string name="supplemental_icon_with_listener">Supplemental icon with listener</string>
+    <string name="supplemental_icon_with_listener">Supplemental icon with listener</string>
 
   <!-- Dialog -->
   <string name="standard_alert_dialog">Standard Alert Dialog</string>

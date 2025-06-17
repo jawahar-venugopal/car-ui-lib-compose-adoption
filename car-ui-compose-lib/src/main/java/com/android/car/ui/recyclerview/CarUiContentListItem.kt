@@ -19,25 +19,19 @@
 package com.android.car.ui.recyclerview
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -48,7 +42,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.android.car.ui.R
 
@@ -112,19 +105,27 @@ fun CarUiContentListItem(
                     }
                 }
             }
-            Column(modifier = Modifier.weight(1f).padding(start = dimensionResource(R.dimen.car_ui_list_item_text_start_margin))) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = dimensionResource(R.dimen.car_ui_list_item_text_start_margin))
+            ) {
                 if (!title.isNullOrBlank()) {
                     Text(
                         text = title,
                         style = MaterialTheme.typography.body1,
-                        color = if (enabled) MaterialTheme.colors.onSurface else MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled)
+                        color = if (enabled) MaterialTheme.colors.onSurface else MaterialTheme.colors.onSurface.copy(
+                            alpha = ContentAlpha.disabled
+                        )
                     )
                 }
                 if (!body.isNullOrBlank()) {
                     Text(
                         text = body,
                         style = MaterialTheme.typography.subtitle1,
-                        color = if (enabled) MaterialTheme.colors.onSecondary else MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled)
+                        color = if (enabled) MaterialTheme.colors.onSecondary else MaterialTheme.colors.onSurface.copy(
+                            alpha = ContentAlpha.disabled
+                        )
                     )
                 }
             }

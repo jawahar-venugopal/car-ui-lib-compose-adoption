@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -66,12 +67,10 @@ fun CarUiRecyclerViewScreen() {
         List(101) { i -> "${context.getString(R.string.test_data)}$i" }
     }
     Column(modifier = Modifier.fillMaxSize()) {
-        // Top toolbar
         CarUiToolbar(
             title = stringResource(R.string.app_name),
             navIconType = CarUiToolbarNavIconType.Back,
         )
-        // Main activity list
         CarUiRecyclerView(
             items = data,
             itemContent = { item ->
@@ -88,6 +87,7 @@ internal fun TextView(text: String) {
     ) {
         Text(
             text = text,
+            color = MaterialTheme.colors.onSecondary,
             modifier = Modifier
                 .wrapContentWidth()
                 .padding(top = 10.dp, bottom = 10.dp)
