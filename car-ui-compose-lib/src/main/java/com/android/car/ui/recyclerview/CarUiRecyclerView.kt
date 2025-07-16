@@ -32,11 +32,18 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import com.android.car.ui.R
+import kotlinx.coroutines.launch
 
 
 enum class CarUiRecyclerViewLayoutStyle { LIST, GRID }
@@ -59,10 +66,22 @@ fun <T> CarUiRecyclerView(
     colorResource(id = R.color.car_ui_scrollbar_track_color)
     RoundedCornerShape(dimensionResource(id = R.dimen.car_ui_scrollbar_thumb_radius))
     val recyclerViewHeight = Modifier.fillMaxHeight()
+    val coroutineScope = rememberCoroutineScope()
 
     Box(modifier = modifier.then(recyclerViewHeight)) {
         if (layoutStyle == CarUiRecyclerViewLayoutStyle.GRID && numOfColumns > 1) {
             val gridState = rememberLazyGridState()
+            val scrollbarState by remember {
+                derivedStateOf {
+                    CarUiScrollbarState(
+                        firstVisibleItemIndex = gridState.firstVisibleItemIndex,
+                        visibleItemsCount = gridState.layoutInfo.visibleItemsInfo.size,
+                        totalItemsCount = gridState.layoutInfo.totalItemsCount,
+                        canScrollForward = gridState.canScrollForward,
+                        canScrollBackward = gridState.canScrollBackward
+                    )
+                }
+            }
             Box {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(numOfColumns),
@@ -70,26 +89,57 @@ fun <T> CarUiRecyclerView(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(start = recyclerViewPadding, end = recyclerViewPadding)
+                        .semantics { contentDescription = "car_ui_compose_lazy_list" }
                 ) {
                     items(items) { item ->
                         itemContent(item)
                     }
                 }
             }
-            if (items.size > 3) {
+            if (items.size > numOfColumns) {
                 CarUiScrollbar(
-                    gridState = gridState,
+                    state = scrollbarState,
+                    onPageUp = {
+                        val target =
+                            (gridState.firstVisibleItemIndex - gridState.layoutInfo.visibleItemsInfo.size).coerceAtLeast(
+                                0
+                            )
+                        coroutineScope.launch {
+                            gridState.animateScrollToItem(target)
+                        }
+                    },
+                    onPageDown = {
+                        val target =
+                            (gridState.firstVisibleItemIndex + gridState.layoutInfo.visibleItemsInfo.size).coerceAtMost(
+                                gridState.layoutInfo.totalItemsCount - 1
+                            )
+                        coroutineScope.launch {
+                            gridState.animateScrollToItem(target)
+                        }
+                    },
                     modifier = Modifier.align(Alignment.CenterStart)
                 )
             }
         } else {
             val listState = rememberLazyListState()
+            val scrollbarState by remember {
+                derivedStateOf {
+                    CarUiScrollbarState(
+                        firstVisibleItemIndex = listState.firstVisibleItemIndex,
+                        visibleItemsCount = listState.layoutInfo.visibleItemsInfo.size,
+                        totalItemsCount = listState.layoutInfo.totalItemsCount,
+                        canScrollForward = listState.canScrollForward,
+                        canScrollBackward = listState.canScrollBackward
+                    )
+                }
+            }
             Box {
                 LazyColumn(
                     state = listState,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(start = recyclerViewPadding, end = recyclerViewPadding)
+                        .semantics { contentDescription = "car_ui_compose_lazy_list" }
                 ) {
                     items(items) { item ->
                         itemContent(item)
@@ -103,7 +153,25 @@ fun <T> CarUiRecyclerView(
                 }
             }
             CarUiScrollbar(
-                listState = listState,
+                state = scrollbarState,
+                onPageUp = {
+                    val target =
+                        (listState.firstVisibleItemIndex - listState.layoutInfo.visibleItemsInfo.size).coerceAtLeast(
+                            0
+                        )
+                    coroutineScope.launch {
+                        listState.animateScrollToItem(target)
+                    }
+                },
+                onPageDown = {
+                    val target =
+                        (listState.firstVisibleItemIndex + listState.layoutInfo.visibleItemsInfo.size).coerceAtMost(
+                            listState.layoutInfo.totalItemsCount - 1
+                        )
+                    coroutineScope.launch {
+                        listState.animateScrollToItem(target)
+                    }
+                },
                 modifier = Modifier.align(Alignment.CenterStart)
             )
         }

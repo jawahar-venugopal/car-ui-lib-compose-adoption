@@ -24,6 +24,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.android.car.compose.ui.paintbooth.R
 import com.android.car.ui.recyclerview.CarUiRecyclerView
@@ -194,7 +196,7 @@ fun DemoButton(label: String, action: () -> Unit) {
         Button(
             onClick = {
                 action.invoke()
-            }, modifier = Modifier.wrapContentWidth()
+            }, modifier = Modifier.wrapContentWidth().semantics { contentDescription = "list_button" }
         ) {
             Text(text = label, modifier = Modifier.padding(start = 16.dp, end = 16.dp))
         }

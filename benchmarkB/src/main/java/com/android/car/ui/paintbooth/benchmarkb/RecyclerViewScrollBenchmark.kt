@@ -1,4 +1,4 @@
-package com.android.car.ui.paintbooth.benchmarka
+package com.android.car.ui.paintbooth.benchmarkb
 
 import android.content.Intent
 import androidx.benchmark.macro.FrameTimingMetric
@@ -18,7 +18,7 @@ class RecyclerViewScrollBenchmark {
 
     @get:Rule
     val benchmarkRule = MacrobenchmarkRule()
-    private val targetPackage = "com.android.car.ui.paintbooth"
+    private val targetPackage = "com.android.car.compose.ui.paintbooth"
     private val iterations = 25
 
     private fun launchIntent(activity: String) = Intent().apply {
@@ -35,7 +35,7 @@ class RecyclerViewScrollBenchmark {
             pressHome()
         }) {
         startActivityAndWait(launchIntent("caruirecyclerview.CarUiListItemActivity"))
-        scrollList(14)
+        scrollList(8)
     }
 
     @Test
@@ -48,7 +48,7 @@ class RecyclerViewScrollBenchmark {
             pressHome()
         }) {
         startActivityAndWait(launchIntent("caruirecyclerview.CarUiRecyclerViewActivity"))
-        scrollList(49)
+        scrollList(25)
     }
 
     @Test
@@ -61,7 +61,7 @@ class RecyclerViewScrollBenchmark {
             pressHome()
         }) {
         startActivityAndWait(launchIntent("caruirecyclerview.GridCarUiRecyclerViewActivity"))
-        scrollList(35)
+        scrollList(19)
     }
 
     @Test
@@ -74,15 +74,15 @@ class RecyclerViewScrollBenchmark {
             pressHome()
         }) {
         startActivityAndWait(launchIntent("preferences.PreferenceActivity"))
-        scrollList(9)
+        scrollList(4)
     }
 
-    private fun MacrobenchmarkScope.scrollList(repeat : Int = 5) {
-        device.wait(Until.hasObject(By.res(targetPackage, "car_ui_internal_recycler_view")), 1000)
-        val recyclerView = device.findObject(By.res(targetPackage, "car_ui_internal_recycler_view"))
-        recyclerView.setGestureMargin(device.displayHeight / 2)
-        repeat(repeat) {
-            recyclerView.scroll(Direction.UP, 1f)
+    private fun MacrobenchmarkScope.scrollList(repats: Int = 5) {
+        device.wait(Until.hasObject(By.desc("car_ui_compose_lazy_list")), 2000)
+        val listView = device.findObject(By.desc("car_ui_compose_lazy_list"))
+        listView.setGestureMargin(device.displayHeight / 2)
+        repeat(repats) {
+            listView.scroll(Direction.UP, 1f)
             device.waitForIdle()
         }
     }

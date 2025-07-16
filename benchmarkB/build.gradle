@@ -1,0 +1,60 @@
+plugins {
+    id 'com.android.test'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace 'com.android.car.ui.paintbooth.benchmarkb'
+    compileSdkVersion 35
+
+    defaultConfig {
+        minSdk 28
+        targetSdkVersion 35
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments = [
+                "androidx.benchmark.suppressErrors": "EMULATOR,DEBUGGABLE"
+        ]
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    buildTypes {
+        // This benchmark buildType is used for benchmarking, and should function like your
+        // release build (for example, with minification on). It's signed with a debug key
+        // for easy local/CI testing.
+        benchmark {
+            debuggable = true
+            signingConfig = debug.signingConfig
+            matchingFallbacks = ["release"]
+        }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/AL2.0'
+        exclude 'META-INF/LGPL2.1'
+    }
+
+    targetProjectPath = ":prototypeB"
+    experimentalProperties["android.experimental.self-instrumenting"] = true
+}
+
+dependencies {
+    implementation("androidx.test.ext:junit:1.2.1")
+    implementation("androidx.test.espresso:espresso-core:3.6.1")
+    implementation("androidx.test.uiautomator:uiautomator:2.4.0-alpha05")
+    implementation("androidx.benchmark:benchmark-macro-junit4:1.4.0-alpha04")
+    implementation "androidx.profileinstaller:profileinstaller:1.4.1"
+}
+
+androidComponents {
+    beforeVariants(selector().all()) {
+        enable = buildType == "benchmark"
+    }
+}

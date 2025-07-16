@@ -56,7 +56,7 @@ class GridCarUiRecyclerViewActivity : ComponentActivity() {
 @Composable
 fun GridCarUiRecyclerViewScreen() {
     val data = remember {
-        List(201) { i -> "data$i" }
+        List(301) { i -> "data$i" }
     }
     Column(modifier = Modifier.fillMaxSize()) {
         CarUiToolbar(

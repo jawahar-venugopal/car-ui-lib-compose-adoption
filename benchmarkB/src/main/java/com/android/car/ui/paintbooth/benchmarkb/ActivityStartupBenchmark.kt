@@ -1,4 +1,4 @@
-package com.android.car.ui.paintbooth.benchmarka
+package com.android.car.ui.paintbooth.benchmarkb
 
 import android.content.Intent
 import androidx.benchmark.macro.StartupMode
@@ -14,7 +14,7 @@ class ActivityStartupBenchmark {
 
     @get:Rule
     val benchmarkRule = MacrobenchmarkRule()
-    private val targetPackage = "com.android.car.ui.paintbooth"
+    private val targetPackage = "com.android.car.compose.ui.paintbooth"
     private val iterations = 25
 
     private fun launchIntent(activity: String) =

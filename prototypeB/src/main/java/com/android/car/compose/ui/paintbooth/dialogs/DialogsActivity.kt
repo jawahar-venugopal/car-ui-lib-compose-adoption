@@ -41,6 +41,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.android.car.compose.ui.paintbooth.R
 import com.android.car.ui.CarUiAlertDialog
@@ -128,7 +130,7 @@ fun DialogButton(
             onClick = {
                 onShowDialog(dialogType)
             },
-            modifier = Modifier.wrapContentWidth()
+            modifier = Modifier.wrapContentWidth().semantics { contentDescription = "list_button" }
         ) {
             Text(
                 text = stringResource(dialogType.labelRes),

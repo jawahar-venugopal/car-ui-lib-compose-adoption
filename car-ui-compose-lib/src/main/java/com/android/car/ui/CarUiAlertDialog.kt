@@ -42,6 +42,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.android.car.ui.recyclerview.CarUiCheckBoxListItem
@@ -97,7 +99,6 @@ fun CarUiAlertDialog(
             Column(
                 Modifier
                     .fillMaxWidth()
-                    .padding(top = 18.dp, bottom = 18.dp)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
@@ -121,7 +122,10 @@ fun CarUiAlertDialog(
                             Text(
                                 text = it,
                                 style = MaterialTheme.typography.body1,
-                                color = MaterialTheme.colors.onSurface
+                                color = MaterialTheme.colors.onSurface,
+                                modifier = Modifier.semantics {
+                                    contentDescription = "car_ui_alert_title"
+                                }
                             )
                         }
                         params.subtitle?.let {
@@ -144,7 +148,6 @@ fun CarUiAlertDialog(
                             text = it,
                             style = MaterialTheme.typography.body2,
                             color = MaterialTheme.colors.onSurface,
-                            modifier = Modifier.padding(bottom = 8.dp)
                         )
                     }
 
@@ -166,8 +169,7 @@ fun CarUiAlertDialog(
                             },
                             hint = params.editTextPrompt ?: "",
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
+                                .fillMaxWidth(),
                             keyboardType = params.editTextKeyboardType
                         )
                     }

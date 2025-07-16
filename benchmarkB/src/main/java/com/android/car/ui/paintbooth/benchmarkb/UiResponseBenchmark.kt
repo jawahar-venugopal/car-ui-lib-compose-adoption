@@ -1,4 +1,4 @@
-package com.android.car.ui.paintbooth.benchmarka
+package com.android.car.ui.paintbooth.benchmarkb
 
 import android.content.Intent
 import androidx.benchmark.macro.FrameTimingMetric
@@ -17,7 +17,7 @@ class UiResponseBenchmark {
 
     @get:Rule
     val benchmarkRule = MacrobenchmarkRule()
-    private val targetPackage = "com.android.car.ui.paintbooth"
+    private val targetPackage = "com.android.car.compose.ui.paintbooth"
     private val iterations = 25
 
     private fun launchIntent(activity: String) = Intent().apply {
@@ -35,16 +35,16 @@ class UiResponseBenchmark {
         }) {
         startActivityAndWait(launchIntent("dialogs.DialogsActivity"))
         for (i in 0 until 5) {
-            device.wait(Until.hasObject(By.res(targetPackage, "car_ui_internal_recycler_view")), 1000)
-            val recyclerView = device.findObject(By.res(targetPackage, "car_ui_internal_recycler_view"))
+            device.wait(Until.hasObject(By.desc("car_ui_compose_lazy_list")), 1000)
+            val recyclerView = device.findObject(By.desc("car_ui_compose_lazy_list"))
             val firstItem = recyclerView.children[i] ?: error("No items in the list")
-            val button = firstItem.findObject(By.res(targetPackage, "button"))
+            val button = firstItem.findObject(By.desc( "list_button"))
                 ?: error("No button found in first list item")
             button.click()
-            device.wait(Until.hasObject(By.res(targetPackage,"car_ui_alert_title")), 1000)
+            device.wait(Until.hasObject(By.desc("car_ui_alert_title")), 1000)
             device.waitForIdle()
             device.click(1300, 300)
-            device.wait(Until.gone(By.res(targetPackage,"car_ui_alert_title")), 1000)
+            device.wait(Until.gone(By.desc("car_ui_alert_title")), 1000)
             device.waitForIdle()
         }
     }
@@ -59,17 +59,17 @@ class UiResponseBenchmark {
             pressHome()
         }) {
         startActivityAndWait(launchIntent("toolbar.ToolbarActivity"))
-        device.wait(Until.hasObject(By.res(targetPackage, "car_ui_internal_recycler_view")), 1000)
+        device.wait(Until.hasObject(By.desc( "car_ui_compose_lazy_list")), 1000)
         for (i in 0 until 5) {
-            val recyclerView = device.findObject(By.res(targetPackage, "car_ui_internal_recycler_view"))
+            val recyclerView = device.findObject(By.desc("car_ui_compose_lazy_list"))
             recyclerView.setGestureMargin(device.displayWidth / 4)
             val item = recyclerView.children[i]
                 ?: error("No visible item after scrolling to $i")
-            val button = item.findObject(By.res(targetPackage, "button"))
+            val button = item.findObject(By.desc( "list_button"))
                 ?: error("No button found in first list item")
             button.click()
             device.waitForIdle()
-            recyclerView.scroll(Direction.UP, 1f); device.waitForIdle()
+            recyclerView.scroll(Direction.UP, 0.25f); device.waitForIdle()
             device.waitForIdle()
         }
     }

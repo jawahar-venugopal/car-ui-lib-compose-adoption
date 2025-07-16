@@ -56,9 +56,7 @@ import kotlin.math.roundToInt
 
 @Composable
 fun CarUiScrollbar(
-    modifier: Modifier = Modifier,
-    listState: LazyListState? = null,
-    gridState: LazyGridState? = null,
+    state: CarUiScrollbarState,
     thumbColor: Color = colorResource(id = R.color.car_ui_scrollbar_thumb_color),
     thumbMinHeight: Dp = dimensionResource(id = R.dimen.car_ui_scrollbar_thumb_min_height),
     thumbRadius: Dp = dimensionResource(id = R.dimen.car_ui_scrollbar_thumb_radius),
@@ -67,54 +65,22 @@ fun CarUiScrollbar(
     iconUp: Painter = painterResource(id = R.drawable.car_ui_recyclerview_ic_up),
     iconDown: Painter = painterResource(id = R.drawable.car_ui_recyclerview_ic_down),
     onPageUp: (() -> Unit)? = null,
-    onPageDown: (() -> Unit)? = null
+    onPageDown: (() -> Unit)? = null,
+    modifier: Modifier = Modifier,
 ) {
-    require((listState != null) xor (gridState != null)) { "Pass either listState or gridState, not both or neither." }
-    val canScrollForward = when {
-        listState != null -> listState.canScrollForward
-        gridState != null -> gridState.canScrollForward
-        else -> false
-    }
-    val canScrollBackward = when {
-        listState != null -> listState.canScrollBackward
-        gridState != null -> gridState.canScrollBackward
-        else -> false
-    }
-    val isScrollable = canScrollForward || canScrollBackward
-    if (!isScrollable) return
+    if (!state.canScrollForward && !state.canScrollBackward) return
     val scrollbarWidth = dimensionResource(id = R.dimen.car_ui_scrollbar_width)
     val thumbWidth = dimensionResource(id = R.dimen.car_ui_scrollbar_thumb_width)
-    val coroutineScope = rememberCoroutineScope()
 
-    val (firstVisibleItemIndex, visibleItemsCount, totalItemsCount) = when {
-        listState != null -> {
-            Triple(
-                listState.firstVisibleItemIndex,
-                listState.layoutInfo.visibleItemsInfo.size,
-                listState.layoutInfo.totalItemsCount
-            )
-        }
-
-        gridState != null -> {
-            Triple(
-                gridState.firstVisibleItemIndex,
-                gridState.layoutInfo.visibleItemsInfo.size,
-                gridState.layoutInfo.totalItemsCount
-            )
-        }
-
-        else -> Triple(0, 0, 0)
-    }
-
-    val atTop = firstVisibleItemIndex == 0
-    val atBottom = (firstVisibleItemIndex + visibleItemsCount) >= totalItemsCount
+    val atTop = state.firstVisibleItemIndex == 0
+    val atBottom = (state.firstVisibleItemIndex + state.visibleItemsCount) >= state.totalItemsCount
     val disabledAlpha = 0.46f
 
     val density = LocalDensity.current
     val scrollbarHeightPx = remember { mutableStateOf(0) }
 
-    val validVisibleItems = if (visibleItemsCount > 0) visibleItemsCount else 1
-    val validTotalItems = if (totalItemsCount > 0) totalItemsCount else 1
+    val validVisibleItems = if (state.visibleItemsCount > 0) state.visibleItemsCount else 1
+    val validTotalItems = if (state.totalItemsCount > 0) state.totalItemsCount else 1
 
     val thumbMinHeightPx = with(density) { thumbMinHeight.roundToPx() }
     val trackHeightPx = scrollbarHeightPx.value
@@ -125,7 +91,7 @@ fun CarUiScrollbar(
         min(thumbMinHeightPx, trackHeightPx)
     )
     val scrollPercent = if (validTotalItems > validVisibleItems) {
-        firstVisibleItemIndex.toFloat() / (validTotalItems - validVisibleItems).toFloat()
+        state.firstVisibleItemIndex.toFloat() / (validTotalItems - validVisibleItems).toFloat()
     } else 0f
     val thumbOffsetPx = ((trackHeightPx - thumbHeightPx) * scrollPercent).toInt()
 
@@ -144,13 +110,7 @@ fun CarUiScrollbar(
             IconButton(
                 onClick = {
                     if (!atTop) {
-                        coroutineScope.launch {
-                            val targetIndex =
-                                (firstVisibleItemIndex - visibleItemsCount).coerceAtLeast(0)
-                            listState?.animateScrollToItem(targetIndex)
-                            gridState?.animateScrollToItem(targetIndex)
-                            onPageUp?.invoke()
-                        }
+                        onPageUp?.invoke()
                     }
                 },
                 enabled = !atTop,
@@ -196,15 +156,7 @@ fun CarUiScrollbar(
             IconButton(
                 onClick = {
                     if (!atBottom) {
-                        coroutineScope.launch {
-                            val targetIndex =
-                                (firstVisibleItemIndex + visibleItemsCount).coerceAtMost(
-                                    totalItemsCount - 1
-                                )
-                            listState?.animateScrollToItem(targetIndex)
-                            gridState?.animateScrollToItem(targetIndex)
-                            onPageDown?.invoke()
-                        }
+                        onPageDown?.invoke()
                     }
                 },
                 enabled = !atBottom,
