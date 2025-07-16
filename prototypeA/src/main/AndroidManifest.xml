@@ -28,19 +28,19 @@
         </activity>
         <activity
             android:name=".dialogs.DialogsActivity"
-            android:exported="false"
+            android:exported="true"
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".caruirecyclerview.CarUiRecyclerViewActivity"
-            android:exported="false"
+            android:exported="true"
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".caruirecyclerview.GridCarUiRecyclerViewActivity"
-            android:exported="false"
+            android:exported="true"
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".preferences.PreferenceActivity"
-            android:exported="false"
+            android:exported="true"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="distractionOptimized"
@@ -48,7 +48,7 @@
         </activity>
         <activity
             android:name=".toolbar.ToolbarActivity"
-            android:exported="false"
+            android:exported="true"
             android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="distractionOptimized"
@@ -56,7 +56,7 @@
         </activity>
         <activity
             android:name=".caruirecyclerview.CarUiListItemActivity"
-            android:exported="false"
+            android:exported="true"
             android:parentActivityName=".MainActivity" />
     </application>
 

@@ -17,12 +17,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 34
+    compileSdkVersion 35
     namespace 'com.android.car.ui.paintbooth'
     defaultConfig {
         applicationId "com.android.car.ui.paintbooth"
         minSdkVersion 28
-        targetSdkVersion 34
+        targetSdkVersion 35
         versionCode 1
         versionName "1.0"
     }
@@ -70,7 +70,7 @@ android {
             initWith release
             signingConfig signingConfigs.debug   // <-- THIS IS CRITICAL
             matchingFallbacks = ['release']
-            debuggable false
+            debuggable true
         }
     }
 
@@ -84,4 +84,5 @@ dependencies {
     api 'androidx.constraintlayout:constraintlayout:2.1.0'
     api 'androidx.recyclerview:recyclerview:1.2.1'
     implementation "androidx.asynclayoutinflater:asynclayoutinflater:1.0.0"
+    implementation "androidx.profileinstaller:profileinstaller:1.4.1"
 }

@@ -5,16 +5,15 @@ plugins {
 
 android {
     namespace 'com.android.car.ui.paintbooth.benchmarka'
-    compileSdkVersion 34
+    compileSdkVersion 35
 
     defaultConfig {
         minSdkVersion 28
-        targetSdkVersion 34
+        targetSdkVersion 35
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArguments = [
-                "androidx.benchmark.suppressErrors": "EMULATOR",
-                "macrobenchmark.forceLaunchTimeoutMs": "10000"
+                "androidx.benchmark.suppressErrors": "EMULATOR,DEBUGGABLE"
         ]
     }
 
@@ -51,6 +50,7 @@ dependencies {
     implementation("androidx.test.espresso:espresso-core:3.6.1")
     implementation("androidx.test.uiautomator:uiautomator:2.4.0-alpha05")
     implementation("androidx.benchmark:benchmark-macro-junit4:1.4.0-alpha04")
+    implementation "androidx.profileinstaller:profileinstaller:1.4.1"
 }
 
 androidComponents {

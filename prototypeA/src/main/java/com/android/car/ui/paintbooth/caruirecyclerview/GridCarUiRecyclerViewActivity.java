@@ -38,7 +38,7 @@ import java.util.ArrayList;
 public class GridCarUiRecyclerViewActivity extends Activity implements
         InsetsChangedListener {
     private final ArrayList<String> mData = new ArrayList<>();
-    private final int mDataToGenerate = 200;
+    private final int mDataToGenerate = 300;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
