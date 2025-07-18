@@ -18,6 +18,7 @@
  */
 package com.android.car.compose.ui.paintbooth.preferences
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -25,12 +26,24 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.fromHtml
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
 import com.android.car.compose.ui.paintbooth.R
 import com.android.car.ui.preference.CarUiCheckboxPreference
 import com.android.car.ui.preference.CarUiEditTextPreference
@@ -42,6 +55,10 @@ import com.android.car.ui.recyclerview.CarUiRecyclerView
 import com.android.car.ui.theme.CarUiTheme
 import com.android.car.ui.toolbar.CarUiToolbar
 import com.android.car.ui.toolbar.CarUiToolbarNavIconType
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+
+private val Context.dataStore by preferencesDataStore(name = "car_ui_lib_prefs")
 
 class PreferenceActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,8 +66,7 @@ class PreferenceActivity : ComponentActivity() {
         setContent {
             CarUiTheme {
                 Surface(
-                    modifier = Modifier
-                        .fillMaxSize()
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     PreferenceDemoScreen()
                 }
@@ -61,6 +77,58 @@ class PreferenceActivity : ComponentActivity() {
 
 @Composable
 fun PreferenceDemoScreen() {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    // State for each preference
+    var checkboxChecked by rememberSaveable { mutableStateOf(false) }
+    var switchChecked by rememberSaveable { mutableStateOf(false) }
+    var editTextValue by rememberSaveable { mutableStateOf("") }
+    var listPrefValue by rememberSaveable { mutableStateOf("") }
+    var prefsLoaded by remember { mutableStateOf(false) }
+
+    // Load preferences only once on first composition
+    LaunchedEffect(Unit) {
+        val prefs = context.dataStore.data.first()
+        checkboxChecked = prefs[booleanPreferencesKey("checkbox")] ?: false
+        switchChecked = prefs[booleanPreferencesKey("switch")] ?: false
+        editTextValue = prefs[stringPreferencesKey("edittext")] ?: ""
+        listPrefValue = prefs[stringPreferencesKey("list")] ?: ""
+        prefsLoaded = true
+    }
+
+    // Handlers to save each preference to DataStore
+    fun saveCheckbox(checked: Boolean) {
+        checkboxChecked = checked
+        scope.launch {
+            context.dataStore.edit { it[booleanPreferencesKey("checkbox")] = checked }
+        }
+    }
+
+    fun saveSwitch(checked: Boolean) {
+        switchChecked = checked
+        scope.launch {
+            context.dataStore.edit { it[booleanPreferencesKey("switch")] = checked }
+        }
+    }
+
+    fun saveEditText(value: String) {
+        editTextValue = value
+        scope.launch {
+            context.dataStore.edit { it[stringPreferencesKey("edittext")] = value }
+        }
+    }
+
+    fun saveListPref(value: String) {
+        listPrefValue = value
+        scope.launch {
+            context.dataStore.edit { it[stringPreferencesKey("list")] = value }
+        }
+    }
+
+    // Wait for preferences to load before rendering
+    if (!prefsLoaded) return
+
     val prefItems = listOf<@Composable () -> Unit>(
         {
             CarUiPreferenceCategory(title = stringResource(R.string.basic_preferences)) {
@@ -89,36 +157,41 @@ fun PreferenceDemoScreen() {
         {
             CarUiPreferenceCategory(title = stringResource(R.string.widgets)) {
                 CarUiCheckboxPreference(
-                    key = "checkbox",
                     title = stringResource(R.string.title_checkbox_preference),
-                    summary = stringResource(R.string.summary_checkbox_preference)
+                    summary = stringResource(R.string.summary_checkbox_preference),
+                    checked = checkboxChecked,
+                    onCheckedChange = ::saveCheckbox
                 )
                 CarUiSwitchPreference(
-                    key = "switch",
                     title = stringResource(R.string.title_switch_preference),
-                    summary = stringResource(R.string.summary_switch_preference)
+                    summary = stringResource(R.string.summary_switch_preference),
+                    checked = switchChecked,
+                    onCheckedChange = ::saveSwitch
                 )
             }
         },
         {
             CarUiPreferenceCategory(title = stringResource(R.string.dialogs)) {
                 CarUiEditTextPreference(
-                    key = "edittext",
                     title = stringResource(R.string.title_edittext_preference),
                     dialogTitle = stringResource(R.string.dialog_title_edittext_preference),
+                    value = editTextValue,
+                    onValueChange = ::saveEditText,
                     useSimpleSummaryProvider = true
                 )
                 CarUiListPreference(
-                    key = "list",
                     title = stringResource(R.string.title_list_preference),
                     dialogTitle = stringResource(R.string.dialog_title_list_preference),
                     entries = stringArrayResource(R.array.entries).toList(),
                     entryValues = stringArrayResource(R.array.entry_values).toList(),
+                    selectedValue = listPrefValue,
+                    onValueChange = ::saveListPref,
                     useSimpleSummaryProvider = true
                 )
             }
         }
     )
+
     Column(modifier = Modifier.fillMaxSize()) {
         CarUiToolbar(
             title = stringResource(R.string.preferences_screen_title),
@@ -126,9 +199,7 @@ fun PreferenceDemoScreen() {
         )
         CarUiRecyclerView(
             items = prefItems,
-            itemContent = { item ->
-                item()
-            }
+            itemContent = { item -> item() }
         )
     }
 }

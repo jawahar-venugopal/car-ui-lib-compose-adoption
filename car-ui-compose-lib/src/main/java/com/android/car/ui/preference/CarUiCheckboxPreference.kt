@@ -34,36 +34,24 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
 import com.android.car.ui.R
-import com.android.car.ui.utils.dataStore
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 
 @Composable
 fun CarUiCheckboxPreference(
-    key: String,
     title: String,
     summary: String? = null,
     icon: Painter? = null,
-    defaultChecked: Boolean = false,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
     enabled: Boolean = true,
     restricted: Boolean = false,
     onRestrictedClick: (() -> Unit)? = null,
@@ -71,31 +59,7 @@ fun CarUiCheckboxPreference(
     onDisabledClick: (() -> Unit)? = null,
     showChevron: Boolean = false,
     modifier: Modifier = Modifier,
-    checked: Boolean? = null,
-    onCheckedChange: ((Boolean) -> Unit)? = null,
 ) {
-    val context = LocalContext.current
-    val dataStore = context.dataStore
-    val prefKey = booleanPreferencesKey(key)
-    var internalChecked by remember { mutableStateOf(defaultChecked) }
-    var loaded by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-
-    val isAuto = checked == null || onCheckedChange == null
-
-    LaunchedEffect(key) {
-        if (isAuto) {
-            val prefs = dataStore.data.first()
-            internalChecked = prefs[prefKey] ?: defaultChecked
-            loaded = true
-        } else {
-            loaded = true
-        }
-    }
-
-    if (!loaded) return
-
-    val actualChecked = checked ?: internalChecked
     val isEnabled = enabled && !restricted && LocalPreferenceCategoryEnabled.current
     val isClickable = (enabled || clickableWhileDisabled) && !restricted
     val background = MaterialTheme.colors.background
@@ -118,15 +82,7 @@ fun CarUiCheckboxPreference(
                 .fillMaxWidth()
                 .let {
                     when {
-                        isEnabled && (onCheckedChange != null || isAuto) -> it.clickable {
-                            val newValue = !actualChecked
-                            if (isAuto) {
-                                internalChecked = newValue
-                                scope.launch { dataStore.edit { it[prefKey] = newValue } }
-                            }
-                            onCheckedChange?.invoke(newValue)
-                        }
-
+                        isEnabled -> it.clickable { onCheckedChange(!checked) }
                         restricted && onRestrictedClick != null -> it.clickable { onRestrictedClick() }
                         !isEnabled && onDisabledClick != null -> it.clickable { onDisabledClick() }
                         else -> it
@@ -172,16 +128,8 @@ fun CarUiCheckboxPreference(
                 )
             }
             Checkbox(
-                checked = actualChecked,
-                onCheckedChange = if (isEnabled && (onCheckedChange != null || isAuto)) {
-                    { newValue ->
-                        if (isAuto) {
-                            internalChecked = newValue
-                            scope.launch { dataStore.edit { it[prefKey] = newValue } }
-                        }
-                        onCheckedChange?.invoke(newValue)
-                    }
-                } else null,
+                checked = checked,
+                onCheckedChange = if (isEnabled) onCheckedChange else null,
                 enabled = isClickable,
                 modifier = Modifier
                     .scale(2.0f)

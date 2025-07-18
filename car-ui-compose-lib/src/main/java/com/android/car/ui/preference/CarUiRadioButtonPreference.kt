@@ -34,28 +34,16 @@ import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
 import com.android.car.ui.R
-import com.android.car.ui.utils.dataStore
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 
 @Composable
 fun CarUiRadioButtonPreference(
@@ -64,7 +52,8 @@ fun CarUiRadioButtonPreference(
     title: String,
     summary: String? = null,
     icon: Painter? = null,
-    defaultSelected: Boolean = false,
+    selected: Boolean,
+    onSelected: () -> Unit,
     enabled: Boolean = true,
     restricted: Boolean = false,
     onRestrictedClick: (() -> Unit)? = null,
@@ -72,30 +61,7 @@ fun CarUiRadioButtonPreference(
     onDisabledClick: (() -> Unit)? = null,
     showChevron: Boolean = false,
     modifier: Modifier = Modifier,
-    selected: Boolean? = null,
-    onSelected: (() -> Unit)? = null,
 ) {
-    val context = LocalContext.current
-    val dataStore = context.dataStore
-    val prefKey = stringPreferencesKey(groupKey)
-    var internalSelected by remember { mutableStateOf(defaultSelected) }
-    var loaded by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-
-    val isAuto = selected == null || onSelected == null
-
-    LaunchedEffect(groupKey) {
-        if (isAuto) {
-            val prefs = dataStore.data.first()
-            internalSelected = (prefs[prefKey] ?: "").equals(value)
-            loaded = true
-        } else {
-            loaded = true
-        }
-    }
-    if (!loaded) return
-
-    val isChecked = selected ?: internalSelected
     val isEnabled = enabled && !restricted && LocalPreferenceCategoryEnabled.current
     val clickable = (enabled || clickableWhileDisabled) && !restricted
     val background = MaterialTheme.colors.background
@@ -118,14 +84,7 @@ fun CarUiRadioButtonPreference(
                 .fillMaxWidth()
                 .let {
                     when {
-                        isEnabled && (onSelected != null || isAuto) -> it.clickable {
-                            if (isAuto) {
-                                internalSelected = true
-                                scope.launch { dataStore.edit { it[prefKey] = value } }
-                            }
-                            onSelected?.invoke()
-                        }
-
+                        isEnabled -> it.clickable { onSelected() }
                         restricted && onRestrictedClick != null -> it.clickable { onRestrictedClick() }
                         !isEnabled && onDisabledClick != null -> it.clickable { onDisabledClick() }
                         else -> it
@@ -171,16 +130,8 @@ fun CarUiRadioButtonPreference(
                 )
             }
             RadioButton(
-                selected = isChecked,
-                onClick = if (isEnabled && (onSelected != null || isAuto)) {
-                    {
-                        if (isAuto) {
-                            internalSelected = true
-                            scope.launch { dataStore.edit { it[prefKey] = value } }
-                        }
-                        onSelected?.invoke()
-                    }
-                } else null,
+                selected = selected,
+                onClick = if (isEnabled) onSelected else null,
                 enabled = clickable,
                 modifier = Modifier.scale(2.0f),
                 colors = RadioButtonDefaults.colors(unselectedColor = MaterialTheme.colors.onSurface)

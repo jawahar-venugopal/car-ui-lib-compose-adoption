@@ -32,93 +32,31 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
 import com.android.car.ui.CarUiAlertDialog
 import com.android.car.ui.CarUiAlertDialogParams
 import com.android.car.ui.R
-import com.android.car.ui.utils.dataStore
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 
 @Composable
 fun CarUiEditTextPreference(
-    key: String,
     title: String,
     dialogTitle: String = title,
     summary: String? = null,
-    icon: Painter? = null,
-    defaultValue: String = "",
-    enabled: Boolean = true,
-    restricted: Boolean = false,
-    onRestrictedClick: (() -> Unit)? = null,
-    onDisabledClick: (() -> Unit)? = null,
-    showChevron: Boolean = false,
-    modifier: Modifier = Modifier,
-    keyboardType: KeyboardType = KeyboardType.Text,
-    useSimpleSummaryProvider: Boolean = false,
-) {
-    val context = LocalContext.current
-    val dataStore = context.dataStore
-    val prefKey = stringPreferencesKey(key)
-    var value by remember { mutableStateOf(defaultValue) }
-    var loaded by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-
-    LaunchedEffect(key) {
-        val prefs = dataStore.data.first()
-        value = prefs[prefKey] ?: defaultValue
-        loaded = true
-    }
-
-    if (loaded) {
-        CarUiEditTextPreferenceCore(
-            title = title,
-            dialogTitle = dialogTitle,
-            summary = summary,
-            icon = icon,
-            value = value,
-            onValueChange = { newValue ->
-                value = newValue
-                scope.launch { dataStore.edit { it[prefKey] = newValue } }
-            },
-            useSimpleSummaryProvider = useSimpleSummaryProvider,
-            enabled = enabled,
-            restricted = restricted,
-            onRestrictedClick = onRestrictedClick,
-            onDisabledClick = onDisabledClick,
-            showChevron = showChevron,
-            modifier = modifier,
-            keyboardType = keyboardType
-        )
-    }
-}
-
-@Composable
-private fun CarUiEditTextPreferenceCore(
-    title: String,
-    summary: String? = null,
-    dialogTitle: String = title,
     icon: Painter? = null,
     value: String,
     onValueChange: (String) -> Unit,
-    useSimpleSummaryProvider: Boolean = false,
     enabled: Boolean = true,
     restricted: Boolean = false,
     onRestrictedClick: (() -> Unit)? = null,
@@ -126,6 +64,7 @@ private fun CarUiEditTextPreferenceCore(
     showChevron: Boolean = false,
     modifier: Modifier = Modifier,
     keyboardType: KeyboardType = KeyboardType.Text,
+    useSimpleSummaryProvider: Boolean = false,
 ) {
     var dialogOpen by remember { mutableStateOf(false) }
     var tempValue by remember { mutableStateOf(value) }
@@ -169,9 +108,11 @@ private fun CarUiEditTextPreferenceCore(
                     contentScale = ContentScale.Fit
                 )
             }
-            Column(Modifier
-                .weight(1f)
-                .padding(start = if (icon != null) iconSpacing else 0.dp)) {
+            Column(
+                Modifier
+                    .weight(1f)
+                    .padding(start = if (icon != null) iconSpacing else 0.dp)
+            ) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.body1,
@@ -200,7 +141,6 @@ private fun CarUiEditTextPreferenceCore(
             }
         }
     }
-
     CarUiAlertDialog(
         CarUiAlertDialogParams(
             show = dialogOpen,

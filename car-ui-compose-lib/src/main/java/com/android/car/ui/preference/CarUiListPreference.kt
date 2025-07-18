@@ -32,39 +32,32 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.compose.ui.unit.dp
 import com.android.car.ui.CarUiAlertDialog
 import com.android.car.ui.CarUiAlertDialogParams
 import com.android.car.ui.R
-import com.android.car.ui.utils.dataStore
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
 
 @Composable
 fun CarUiListPreference(
-    key: String,
     title: String,
     dialogTitle: String = title,
     summary: String? = null,
     icon: Painter? = null,
     entries: List<String>,
     entryValues: List<String>,
-    defaultValue: String = "",
+    selectedValue: String,
+    onValueChange: (String) -> Unit,
     enabled: Boolean = true,
     restricted: Boolean = false,
     onRestrictedClick: (() -> Unit)? = null,
@@ -74,67 +67,14 @@ fun CarUiListPreference(
     modifier: Modifier = Modifier,
 ) {
     require(entries.size == entryValues.size) { "entries and entryValues must be the same size." }
-    val context = LocalContext.current
-    val dataStore = context.dataStore
-    val prefKey = stringPreferencesKey(key)
-    var selectedIndex by remember { mutableStateOf(-1) }
-    var loaded by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-
-    LaunchedEffect(key) {
-        val prefs = dataStore.data.first()
-        val value = prefs[prefKey] ?: defaultValue
-        selectedIndex = entryValues.indexOf(value).takeIf { it >= 0 } ?: -1
-        loaded = true
-    }
-
-    if (loaded) {
-        CarUiListPreferenceCore(
-            title = title,
-            dialogTitle = dialogTitle,
-            summary = summary,
-            icon = icon,
-            entries = entries,
-            selectedIndex = selectedIndex,
-            onEntrySelected = { i ->
-                selectedIndex = i
-                scope.launch { dataStore.edit { it[prefKey] = entryValues[i] } }
-            },
-            enabled = enabled,
-            restricted = restricted,
-            onRestrictedClick = onRestrictedClick,
-            onDisabledClick = onDisabledClick,
-            showChevron = showChevron,
-            useSimpleSummaryProvider = useSimpleSummaryProvider,
-            modifier = modifier,
-        )
-    }
-}
-
-@Composable
-fun CarUiListPreferenceCore(
-    title: String,
-    dialogTitle: String = title,
-    summary: String? = null,
-    icon: Painter? = null,
-    entries: List<String>,
-    selectedIndex: Int,
-    onEntrySelected: (Int) -> Unit,
-    enabled: Boolean = true,
-    restricted: Boolean = false,
-    onRestrictedClick: (() -> Unit)? = null,
-    onDisabledClick: (() -> Unit)? = null,
-    showChevron: Boolean = false,
-    useSimpleSummaryProvider: Boolean = false,
-    modifier: Modifier = Modifier,
-) {
     var dialogOpen by remember { mutableStateOf(false) }
+    val selectedIndex = entryValues.indexOf(selectedValue).takeIf { it >= 0 } ?: -1
     val isEnabled = enabled && !restricted && LocalPreferenceCategoryEnabled.current
     val background = MaterialTheme.colors.background
     val padding = dimensionResource(id = R.dimen.car_ui_pref_padding)
     val minHeight = dimensionResource(id = R.dimen.car_ui_pref_min_height)
     val iconSize = dimensionResource(id = R.dimen.car_ui_pref_icon_size)
-    dimensionResource(id = R.dimen.car_ui_pref_icon_spacing)
+    val iconSpacing = dimensionResource(id = R.dimen.car_ui_pref_icon_spacing)
     val shape = MaterialTheme.shapes.medium
 
     Surface(
@@ -169,7 +109,8 @@ fun CarUiListPreferenceCore(
                     contentScale = ContentScale.Fit
                 )
             }
-            Column(Modifier.weight(1f)) {
+            Column(Modifier.weight(1f)
+                .padding(start = if (icon != null) iconSpacing else 0.dp)) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.body1,
@@ -180,7 +121,6 @@ fun CarUiListPreferenceCore(
                         if (selectedIndex < 0 || selectedIndex >= entries.size) "Not set"
                         else entries[selectedIndex]
                     }
-
                     !summary.isNullOrBlank() -> summary
                     else -> ""
                 }
@@ -206,7 +146,12 @@ fun CarUiListPreferenceCore(
             title = dialogTitle,
             singleChoiceItems = entries,
             singleChoiceSelectedIndex = selectedIndex,
-            onSingleChoiceSelect = onEntrySelected,
+            onSingleChoiceSelect = { idx ->
+                if (idx in entryValues.indices) {
+                    onValueChange(entryValues[idx])
+                }
+                dialogOpen = false
+            },
             onDismiss = { dialogOpen = false }
         )
     )
