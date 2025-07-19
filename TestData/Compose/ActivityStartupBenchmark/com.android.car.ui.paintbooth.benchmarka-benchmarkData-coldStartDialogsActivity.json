@@ -1,0 +1,199 @@
+{
+    "context": {
+        "build": {
+            "brand": "google",
+            "device": "emulator_car64_x86_64",
+            "fingerprint": "google/sdk_gcar_x86_64/emulator_car64_x86_64:14/UAA1.250512.001/13479943:userdebug/dev-keys",
+            "id": "UAA1.250512.001",
+            "model": "Car on x86_64 emulator",
+            "type": "userdebug",
+            "version": {
+                "codename": "REL",
+                "sdk": 34
+            }
+        },
+        "cpuCoreCount": 4,
+        "cpuLocked": false,
+        "cpuMaxFreqHz": 2000,
+        "memTotalBytes": 8334028800,
+        "sustainedPerformanceModeEnabled": false,
+        "artMainlineVersion": 341010052,
+        "osCodenameAbbreviated": "U",
+        "compilationMode": "run-from-apk",
+        "payload": {}
+    },
+    "benchmarks": [
+        {
+            "name": "coldStartDialogsActivity",
+            "params": {},
+            "className": "com.android.car.ui.paintbooth.benchmarkb.ActivityStartupBenchmark",
+            "totalRunTimeNs": 105568042200,
+            "metrics": {
+                "timeToInitialDisplayMs": {
+                    "minimum": 979.0514,
+                    "maximum": 1696.752,
+                    "median": 1091.0308,
+                    "coefficientOfVariation": 0.14799460312603763,
+                    "runs": [
+                        1016.131,
+                        1074.8322,
+                        1099.3574,
+                        1337.5085,
+                        1279.1816,
+                        1474.6342,
+                        1093.4138,
+                        1284.5073,
+                        1107.1405,
+                        1123.8003,
+                        1164.5156,
+                        1040.2433,
+                        1049.9254,
+                        1054.5693,
+                        1025.0807,
+                        1696.752,
+                        1022.364,
+                        1053.0381,
+                        1091.0308,
+                        1043.4998,
+                        1239.1668,
+                        1187.1239,
+                        986.5249,
+                        979.0514,
+                        985.6743
+                    ]
+                }
+            },
+            "sampledMetrics": {},
+            "warmupIterations": 0,
+            "repeatIterations": 25,
+            "thermalThrottleSleepSeconds": 0,
+            "profilerOutputs": [
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 0",
+                    "filename": "ActivityStartupBenchmark_coldStartDialogsActivity_iter000_2025-07-18-15-42-11.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 1",
+                    "filename": "ActivityStartupBenchmark_coldStartDialogsActivity_iter001_2025-07-18-15-42-15.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 2",
+                    "filename": "ActivityStartupBenchmark_coldStartDialogsActivity_iter002_2025-07-18-15-42-19.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 3",
+                    "filename": "ActivityStartupBenchmark_coldStartDialogsActivity_iter003_2025-07-18-15-42-25.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 4",
+                    "filename": "ActivityStartupBenchmark_coldStartDialogsActivity_iter004_2025-07-18-15-42-29.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 5",
+                    "filename": "ActivityStartupBenchmark_coldStartDialogsActivity_iter005_2025-07-18-15-42-33.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 6",
+                    "filename": "ActivityStartupBenchmark_coldStartDialogsActivity_iter006_2025-07-18-15-42-38.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 7",
+                    "filename": "ActivityStartupBenchmark_coldStartDialogsActivity_iter007_2025-07-18-15-42-42.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 8",
+                    "filename": "ActivityStartupBenchmark_coldStartDialogsActivity_iter008_2025-07-18-15-42-46.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 9",
+                    "filename": "ActivityStartupBenchmark_coldStartDialogsActivity_iter009_2025-07-18-15-42-50.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 10",
+                    "filename": "ActivityStartupBenchmark_coldStartDialogsActivity_iter010_2025-07-18-15-42-55.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 11",
+                    "filename": "ActivityStartupBenchmark_coldStartDialogsActivity_iter011_2025-07-18-15-42-58.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 12",
+                    "filename": "ActivityStartupBenchmark_coldStartDialogsActivity_iter012_2025-07-18-15-43-02.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 13",
+                    "filename": "ActivityStartupBenchmark_coldStartDialogsActivity_iter013_2025-07-18-15-43-05.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 14",
+                    "filename": "ActivityStartupBenchmark_coldStartDialogsActivity_iter014_2025-07-18-15-43-09.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 15",
+                    "filename": "ActivityStartupBenchmark_coldStartDialogsActivity_iter015_2025-07-18-15-43-13.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 16",
+                    "filename": "ActivityStartupBenchmark_coldStartDialogsActivity_iter016_2025-07-18-15-43-18.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 17",
+                    "filename": "ActivityStartupBenchmark_coldStartDialogsActivity_iter017_2025-07-18-15-43-21.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 18",
+                    "filename": "ActivityStartupBenchmark_coldStartDialogsActivity_iter018_2025-07-18-15-43-25.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 19",
+                    "filename": "ActivityStartupBenchmark_coldStartDialogsActivity_iter019_2025-07-18-15-43-28.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 20",
+                    "filename": "ActivityStartupBenchmark_coldStartDialogsActivity_iter020_2025-07-18-15-43-33.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 21",
+                    "filename": "ActivityStartupBenchmark_coldStartDialogsActivity_iter021_2025-07-18-15-43-37.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 22",
+                    "filename": "ActivityStartupBenchmark_coldStartDialogsActivity_iter022_2025-07-18-15-43-41.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 23",
+                    "filename": "ActivityStartupBenchmark_coldStartDialogsActivity_iter023_2025-07-18-15-43-45.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 24",
+                    "filename": "ActivityStartupBenchmark_coldStartDialogsActivity_iter024_2025-07-18-15-43-48.perfetto-trace"
+                }
+            ]
+        }
+    ]
+}

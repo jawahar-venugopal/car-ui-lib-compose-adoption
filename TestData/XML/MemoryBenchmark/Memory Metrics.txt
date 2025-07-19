@@ -1,0 +1,5 @@
+MemoryUsageBenchmark_memory
+memoryHeapSizeLastKb   min  7,767.0,   median  7,939.5,   max  8,029.0
+memoryHeapSizeMaxKb    min 10,307.0,   median 10,347.5,   max 10,407.0
+memoryRssAnonLastKb    min 74,792.0,   median 75,008.0,   max 75,388.0
+memoryRssAnonMaxKb     min 76,004.0,   median 76,466.0,   max 77,112.0

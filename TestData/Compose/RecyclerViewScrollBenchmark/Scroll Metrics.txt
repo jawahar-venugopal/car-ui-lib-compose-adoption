@@ -1,0 +1,19 @@
+RecyclerViewScrollBenchmark_scrollCarUiListItemActivity
+frameCount           min 127.0,   median 134.5,   max 142.0
+frameDurationCpuMs   P50   29.0,   P90   44.6,   P95   55.2,   P99   74.8
+frameOverrunMs       P50   17.4,   P90   48.7,   P95   60.9,   P99  437.3
+
+RecyclerViewScrollBenchmark_scrollCarUiRecyclerViewActivity
+frameCount           min  61.0,   median  65.0,   max  70.0
+frameDurationCpuMs   P50   34.8,   P90   51.2,   P95   55.7,   P99   91.6
+frameOverrunMs       P50   31.9,   P90   60.3,   P95   68.1,   P99  497.3
+
+RecyclerViewScrollBenchmark_scrollGridCarUiRecyclerViewActivity
+frameCount           min 106.0,   median 109.0,   max 113.0
+frameDurationCpuMs   P50   29.7,   P90   56.7,   P95   90.5,   P99  128.7
+frameOverrunMs       P50   15.4,   P90   81.4,   P95  143.0,   P99  598.1
+
+RecyclerViewScrollBenchmark_scrollPreferencesActivity
+frameCount           min    51.0,   median    53.0,   max    56.0
+frameDurationCpuMs   P50     37.6,   P90     51.4,   P95     54.4,   P99     70.3
+frameOverrunMs       P50     35.9,   P90     55.7,   P95     71.0,   P99    576.5

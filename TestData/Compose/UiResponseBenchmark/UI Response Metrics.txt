@@ -1,0 +1,10 @@
+UiResponseBenchmark_showDialog
+frameCount           min  60.0,   median  62.5,   max  67.0
+frameDurationCpuMs   P50   19.1,   P90   54.8,   P95   69.9,   P99  106.5
+frameOverrunMs       P50   15.3,   P90  176.2,   P95  229.8,   P99  459.3
+
+
+UiResponseBenchmark_toolbarTest
+frameCount           min  55.0,   median  57.0,   max  60.0
+frameDurationCpuMs   P50   22.5,   P90   44.3,   P95   49.2,   P99   72.3
+frameOverrunMs       P50   11.9,   P90   38.1,   P95   49.1,   P99  519.2

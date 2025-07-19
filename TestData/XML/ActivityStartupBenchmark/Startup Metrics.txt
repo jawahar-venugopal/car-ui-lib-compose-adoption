@@ -1,0 +1,63 @@
+ActivityStartupBenchmark_coldStartMainActivity
+timeToInitialDisplayMs   min   635.3,   median   731.7,   max 1,017.3
+
+ActivityStartupBenchmark_warmStartMainActivity
+timeToInitialDisplayMs   min 206.0,   median 249.0,   max 314.8
+
+ActivityStartupBenchmark_hotStartMainActivity
+timeToInitialDisplayMs   min 158.1,   median 226.2,   max 312.6
+
+ActivityStartupBenchmark_coldStartToolbarActivity
+timeToInitialDisplayMs   min 669.0,   median 784.7,   max 944.2
+
+ActivityStartupBenchmark_warmStartToolbarActivity
+timeToInitialDisplayMs   min 224.7,   median 255.6,   max 301.6
+
+ActivityStartupBenchmark_hotStartToolbarActivity
+timeToInitialDisplayMs   min 128.8,   median 181.2,   max 232.8
+
+ActivityStartupBenchmark_coldStartPreferencesActivity
+timeToInitialDisplayMs   min   631.2,   median   768.6,   max 1,049.9
+
+ActivityStartupBenchmark_warmStartPreferencesActivity
+timeToInitialDisplayMs   min 188.2,   median 209.1,   max 378.8
+
+ActivityStartupBenchmark_hotStartPreferencesActivity
+timeToInitialDisplayMs   min 139.9,   median 205.2,   max 277.3
+
+ActivityStartupBenchmark_coldStartDialogsActivity
+timeToInitialDisplayMs   min   705.1,   median   808.7,   max 1,336.2
+
+ActivityStartupBenchmark_warmStartDialogsActivity
+timeToInitialDisplayMs   min 207.5,   median 243.9,   max 295.8
+
+ActivityStartupBenchmark_hotStartDialogsActivity
+timeToInitialDisplayMs   min 119.8,   median 144.3,   max 178.0
+
+ActivityStartupBenchmark_coldStartCarUiListItemActivity
+timeToInitialDisplayMs   min   708.4,   median   796.5,   max 1,129.2
+
+ActivityStartupBenchmark_warmStartCarUiListItemActivity
+timeToInitialDisplayMs   min 238.9,   median 276.4,   max 438.4
+
+ActivityStartupBenchmark_hotStartCarUiListItemActivity
+timeToInitialDisplayMs   min 146.1,   median 205.1,   max 308.2
+
+ActivityStartupBenchmark_coldStartCarUiRecyclerViewActivity
+timeToInitialDisplayMs   min 636.0,   median 709.4,   max 967.1
+
+ActivityStartupBenchmark_warmStartCarUiRecyclerViewActivity
+timeToInitialDisplayMs   min 211.1,   median 240.8,   max 293.7
+
+ActivityStartupBenchmark_hotStartCarUiRecyclerViewActivity
+timeToInitialDisplayMs   min 112.4,   median 141.6,   max 229.6
+
+ActivityStartupBenchmark_coldStartGridCarUiRecyclerViewActivity
+timeToInitialDisplayMs   min   637.7,   median   689.0,   max 1,256.1
+
+ActivityStartupBenchmark_warmStartGridCarUiRecyclerViewActivity
+timeToInitialDisplayMs   min 256.1,   median 302.7,   max 375.1
+
+ActivityStartupBenchmark_hotStartGridCarUiRecyclerViewActivity
+timeToInitialDisplayMs   min 132.1,   median 186.9,   max 235.1
+

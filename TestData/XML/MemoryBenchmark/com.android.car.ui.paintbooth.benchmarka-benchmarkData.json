@@ -1,0 +1,199 @@
+{
+    "context": {
+        "build": {
+            "brand": "google",
+            "device": "emulator_car64_x86_64",
+            "fingerprint": "google/sdk_gcar_x86_64/emulator_car64_x86_64:14/UAA1.250512.001/13479943:userdebug/dev-keys",
+            "id": "UAA1.250512.001",
+            "model": "Car on x86_64 emulator",
+            "type": "userdebug",
+            "version": {
+                "codename": "REL",
+                "sdk": 34
+            }
+        },
+        "cpuCoreCount": 4,
+        "cpuLocked": false,
+        "cpuMaxFreqHz": 2000,
+        "memTotalBytes": 8334028800,
+        "sustainedPerformanceModeEnabled": false,
+        "artMainlineVersion": 341010052,
+        "osCodenameAbbreviated": "U",
+        "compilationMode": "run-from-apk",
+        "payload": {}
+    },
+    "benchmarks": [
+        {
+            "name": "memory",
+            "params": {},
+            "className": "com.android.car.ui.paintbooth.benchmarka.MemoryUsageBenchmark",
+            "totalRunTimeNs": 1338648310500,
+            "metrics": {
+                "memoryHeapSizeLastKb": {
+                    "minimum": 7767.0,
+                    "maximum": 8029.0,
+                    "median": 7939.5,
+                    "coefficientOfVariation": 0.00999276791658538,
+                    "runs": [
+                        7934.0,
+                        8029.0,
+                        7992.0,
+                        7932.0,
+                        8002.0,
+                        7966.0,
+                        7945.0,
+                        7767.0,
+                        7866.0,
+                        7856.0
+                    ]
+                },
+                "memoryHeapSizeMaxKb": {
+                    "minimum": 10307.0,
+                    "maximum": 10407.0,
+                    "median": 10347.5,
+                    "coefficientOfVariation": 0.0028928945673900594,
+                    "runs": [
+                        10344.0,
+                        10364.0,
+                        10359.0,
+                        10404.0,
+                        10407.0,
+                        10340.0,
+                        10350.0,
+                        10307.0,
+                        10344.0,
+                        10345.0
+                    ]
+                },
+                "memoryRssAnonLastKb": {
+                    "minimum": 74792.0,
+                    "maximum": 75388.0,
+                    "median": 75008.0,
+                    "coefficientOfVariation": 0.0024194052437159132,
+                    "runs": [
+                        74948.0,
+                        75308.0,
+                        75388.0,
+                        75028.0,
+                        74992.0,
+                        75036.0,
+                        75024.0,
+                        74932.0,
+                        74792.0,
+                        74900.0
+                    ]
+                },
+                "memoryRssAnonMaxKb": {
+                    "minimum": 76004.0,
+                    "maximum": 77112.0,
+                    "median": 76466.0,
+                    "coefficientOfVariation": 0.0045847968891976395,
+                    "runs": [
+                        76004.0,
+                        76792.0,
+                        77112.0,
+                        76564.0,
+                        76640.0,
+                        76648.0,
+                        76136.0,
+                        76288.0,
+                        76084.0,
+                        76368.0
+                    ]
+                },
+                "memoryRssFileLastKb": {
+                    "minimum": 80676.0,
+                    "maximum": 82004.0,
+                    "median": 81782.0,
+                    "coefficientOfVariation": 0.004810716470763056,
+                    "runs": [
+                        80676.0,
+                        81740.0,
+                        81984.0,
+                        81704.0,
+                        82004.0,
+                        81496.0,
+                        81904.0,
+                        81824.0,
+                        81600.0,
+                        81944.0
+                    ]
+                },
+                "memoryRssFileMaxKb": {
+                    "minimum": 80684.0,
+                    "maximum": 82012.0,
+                    "median": 81790.0,
+                    "coefficientOfVariation": 0.004810245383804075,
+                    "runs": [
+                        80684.0,
+                        81748.0,
+                        81992.0,
+                        81712.0,
+                        82012.0,
+                        81504.0,
+                        81912.0,
+                        81832.0,
+                        81608.0,
+                        81952.0
+                    ]
+                }
+            },
+            "sampledMetrics": {},
+            "warmupIterations": 0,
+            "repeatIterations": 10,
+            "thermalThrottleSleepSeconds": 0,
+            "profilerOutputs": [
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 0",
+                    "filename": "MemoryUsageBenchmark_memory_iter000_2025-07-19-11-23-18.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 1",
+                    "filename": "MemoryUsageBenchmark_memory_iter001_2025-07-19-11-25-32.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 2",
+                    "filename": "MemoryUsageBenchmark_memory_iter002_2025-07-19-11-27-47.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 3",
+                    "filename": "MemoryUsageBenchmark_memory_iter003_2025-07-19-11-29-58.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 4",
+                    "filename": "MemoryUsageBenchmark_memory_iter004_2025-07-19-11-32-12.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 5",
+                    "filename": "MemoryUsageBenchmark_memory_iter005_2025-07-19-11-34-27.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 6",
+                    "filename": "MemoryUsageBenchmark_memory_iter006_2025-07-19-11-36-40.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 7",
+                    "filename": "MemoryUsageBenchmark_memory_iter007_2025-07-19-11-38-52.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 8",
+                    "filename": "MemoryUsageBenchmark_memory_iter008_2025-07-19-11-41-04.perfetto-trace"
+                },
+                {
+                    "type": "PerfettoTrace",
+                    "label": "Trace Iteration 9",
+                    "filename": "MemoryUsageBenchmark_memory_iter009_2025-07-19-11-43-17.perfetto-trace"
+                }
+            ]
+        }
+    ]
+}
